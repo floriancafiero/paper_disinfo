@@ -146,3 +146,15 @@ What it reports:
   - average prefix/total engagement ratio
 
 This enables reframing q50 as high/low engagement and testing stricter virality (q90/q95) without retraining embeddings.
+
+
+## 10. Lightweight reliability checks
+
+A minimal smoke-test suite validates that each utility script in `tools/` runs end-to-end on tiny synthetic inputs and produces expected outputs:
+
+```bash
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+The same command is executed automatically in CI via `.github/workflows/tools-smoke-tests.yml` when tool-related files change.
+
