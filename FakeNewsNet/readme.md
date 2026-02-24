@@ -1,4 +1,4 @@
-## FakeNewsNet - Disinformation detection & Virality prediction
+## FakeNewsNet – Disinformation detection & Virality prediction
 
 This repository explores how news propagates on Twitter through the FakeNewsNet dataset (*Politifact* subfolder), centered on two supervised tasks:
 
@@ -16,7 +16,7 @@ data_preprocessing/        # Scripts to build standardized sequence datasets
   path_creation.py         # Creates tweet sequences from raw data
   ordering_data.py         # Orders tweets chronologically & groups into propagations
   create_embeddings.py     # Generates BERT text embeddings tensors
-  create_embeddings_mistral.py #Generates mistral embedding through Mistral API
+  create_embeddings_mistral.py # Generates Mistral embeddings through the Mistral API
 disinformation_detection/  # Notebooks for fake vs real news classification
 virality_prediction/       # Notebooks for viral vs non‑viral propagation classification
 ```
@@ -30,7 +30,7 @@ Per tweet features:
 - Text embedding (BERT; some variants use Mistral)
 - Scalar metadata: user verification, follower/following counts, favorites, elapsed time, etc.
 
-Instruction on how to download data are in the [data](./data) folder.
+Instructions on how to download data are in the [data](./data) folder.
 
 ## Model Families (Used in Both Tasks)
 
