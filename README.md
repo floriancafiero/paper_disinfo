@@ -79,3 +79,71 @@ _`train_single_fold`_ functions.
 
 ---
 For questions or access issues (e.g., processed data links), contact the author.
+
+
+## 7. Statistical significance add-on (for rebuttal / paper revision)
+
+To support model-comparison claims with inferential statistics (instead of only mean/std across folds), use:
+
+```bash
+python tools/statistical_evaluation.py --input <metrics.csv> --output <stats.csv>
+```
+
+The script expects per-fold metrics and outputs, for each pair of models (within each dataset/task/metric):
+- paired mean difference
+- bootstrap 95% CI of the mean difference
+- exact sign-flip p-value (paired test; Monte-Carlo approximation for many folds)
+- Holm-Bonferroni corrected p-values
+- Cliff's delta effect size
+
+Supported input formats:
+- **long**: `dataset,task,metric,fold,model,value`
+- **wide** (one column per model) with `--wide --id-cols dataset task metric fold`
+
+This is compatible with already-computed embeddings and preprocessed data; no embedding recomputation is required.
+
+
+## 8. EVONS source-confounding audit (no embedding recomputation)
+
+To directly test source leakage risk (review concern), run:
+
+```bash
+python tools/evons_source_confounding_audit.py \
+  --input evons/data/evons.csv \
+  --metrics-out report/evons_source_audit_folds.csv \
+  --report-out report/evons_source_audit_report.json \
+  --export-group-folds report/evons_group_folds.csv
+```
+
+This script computes:
+- source-label association diagnostics (Chi² and Cramér's V)
+- a **source-only baseline** under random K-fold vs group K-fold by source
+- per-fold metrics (`accuracy`, `macro_f1`, `unseen_source_ratio`)
+- optional row-to-fold assignment for source-grouped CV reuse in notebooks
+
+Interpretation: if source-only performance is strong on random CV but drops on source-grouped CV, the task is likely source-confounded.
+
+
+## 9. FakeNewsNet virality sensitivity audit (no embedding recomputation)
+
+To justify the virality definition and evaluate an early-detection framing with existing preprocessed propagations:
+
+```bash
+python tools/fakenewsnet_virality_sensitivity.py \
+  --input-jsonl FakeNewsNet/data/ordered_real_propagation_paths.jsonl \
+  --thresholds-out report/fnn_virality_thresholds_real.csv \
+  --early-out report/fnn_virality_early_real.csv \
+  --summary-out report/fnn_virality_summary_real.json
+```
+
+Run it on both real and fake propagation files, then merge rows for a global view if needed.
+
+What it reports:
+- threshold sensitivity for q50/q75/q90/q95 (or custom quantiles): threshold value and class balance
+- early-signal diagnostics using first `k` tweets (configurable):
+  - correlation between prefix likes and final total likes
+  - AUC of prefix-likes as a simple score for each threshold-defined label
+  - average prefix/total engagement ratio
+
+This enables reframing q50 as high/low engagement and testing stricter virality (q90/q95) without retraining embeddings.
+
