@@ -184,15 +184,22 @@ def write_csv(path: str, rows: List[Dict[str, object]]) -> None:
         w.writerows(rows)
 
 
-def export_group_assignments(rows: List[Row], folds: List[List[int]], out_path: str, id_col: str | None) -> None:
+def export_group_assignments(
+    rows: List[Row],
+    folds: List[List[int]],
+    out_path: str,
+    id_col: str | None,
+    source_col: str,
+    label_col: str,
+) -> None:
     recs = []
     for fold_id, ids in enumerate(folds):
         for i in ids:
             rec = {
                 "row_index": i,
                 "group_fold": fold_id,
-                "media_source": rows[i].get("media_source", ""),
-                "label": rows[i].get("label", ""),
+                source_col: rows[i].get(source_col, ""),
+                label_col: rows[i].get(label_col, ""),
             }
             if id_col and id_col in rows[i]:
                 rec[id_col] = rows[i][id_col]
@@ -268,7 +275,14 @@ def main() -> None:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     if args.export_group_folds:
-        export_group_assignments(rows, group_folds, args.export_group_folds, args.id_col or None)
+        export_group_assignments(
+            rows,
+            group_folds,
+            args.export_group_folds,
+            args.id_col or None,
+            args.source_col,
+            args.label_col,
+        )
 
     print(f"Saved metrics: {args.metrics_out}")
     print(f"Saved report: {args.report_out}")

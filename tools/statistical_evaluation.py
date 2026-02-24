@@ -107,10 +107,14 @@ def normalize_rows(rows: List[Dict[str, str]], wide: bool, id_cols: List[str], m
             )
         return out
 
+    if len(id_cols) != 4:
+        raise ValueError("--id-cols must contain exactly 4 columns in order: dataset task metric fold")
     required = set(id_cols)
     missing = required.difference(rows[0].keys())
     if missing:
         raise ValueError(f"Missing id columns for wide format: {sorted(missing)}")
+
+    dataset_col, task_col, metric_col, fold_col = id_cols
 
     model_names = [c for c in rows[0].keys() if c not in required]
     if len(model_names) < 2:
@@ -121,10 +125,10 @@ def normalize_rows(rows: List[Dict[str, str]], wide: bool, id_cols: List[str], m
         for m in model_names:
             out.append(
                 {
-                    "dataset": r["dataset"],
-                    "task": r["task"],
-                    "metric": r["metric"],
-                    "fold": r["fold"],
+                    "dataset": r[dataset_col],
+                    "task": r[task_col],
+                    "metric": r[metric_col],
+                    "fold": r[fold_col],
                     "model": m,
                     "value": r[m],
                 }

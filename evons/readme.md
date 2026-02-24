@@ -28,10 +28,10 @@ This repository contains notebook experiments on the Evons news dataset, centere
     └── readme.md
 ```
 
-Instructions on how to download data are showed in the [data](./data) readme.
+Instructions on how to download data are provided in the [data](./data) readme.
 
 ## Data Representation
-Each item in Evons dataset is formed by a title and a caption. Information on the source are also included.
+Each item in the Evons dataset includes a title and a caption. Source information is also included.
 
 
 ## Model families
