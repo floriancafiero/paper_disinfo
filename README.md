@@ -151,3 +151,14 @@ What it reports:
   - average prefix/total engagement ratio
 
 This enables reframing q50 as high/low engagement and testing stricter virality (q90/q95) without retraining embeddings.
+
+
+## 10. Colab quick-start (without embedding recomputation)
+
+If you already have precomputed embeddings and only want to rerun training/evaluation in Colab, use:
+
+- `colab_no_embeddings/evons_colab_runbook.md`
+- `colab_no_embeddings/fakenewsnet_colab_runbook.md`
+
+These runbooks now point to a **single consolidated notebook per task** (4 notebooks total: Evons/FakeNewsNet × disinformation/virality), and explicitly skip embedding regeneration scripts.
+
