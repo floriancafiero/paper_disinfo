@@ -1,0 +1,72 @@
+{
+  "n_rows": 92969,
+  "n_sources": 11,
+  "label_distribution": {
+    "0": 50193,
+    "1": 42776
+  },
+  "top_sources": [
+    [
+      "reuters",
+      14993
+    ],
+    [
+      "npr",
+      11813
+    ],
+    [
+      "ynw",
+      11519
+    ],
+    [
+      "mwn",
+      11315
+    ],
+    [
+      "guardian",
+      9811
+    ],
+    [
+      "wp",
+      8137
+    ],
+    [
+      "aff",
+      7536
+    ],
+    [
+      "psn",
+      6576
+    ],
+    [
+      "nyt",
+      5439
+    ],
+    [
+      "usas",
+      3038
+    ],
+    [
+      "bb4sp",
+      2792
+    ]
+  ],
+  "source_label_association": {
+    "chi2": 92969.00000000001,
+    "dof": 10,
+    "cramers_v": 1.0
+  },
+  "source_only_baseline": {
+    "random_kfold": {
+      "mean_accuracy": 1.0,
+      "mean_macro_f1": 1.0,
+      "mean_unseen_source_ratio": 0.0
+    },
+    "group_kfold_by_source": {
+      "mean_accuracy": 0.1,
+      "mean_macro_f1": 0.1,
+      "mean_unseen_source_ratio": 1.0
+    }
+  },
+  "interpretation_hint": "Large drop from random_kfold to group_kfold_by_source indicates source confounding risk."
+}

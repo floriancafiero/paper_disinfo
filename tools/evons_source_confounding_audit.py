@@ -31,6 +31,8 @@ Row = Dict[str, str]
 
 
 def load_rows(path: str) -> List[Row]:
+    import sys
+    csv.field_size_limit(sys.maxsize)
     with open(path, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     if not rows:
@@ -211,7 +213,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="EVONS source-confounding audit")
     p.add_argument("--input", required=True, help="CSV path (e.g. evons/data/evons.csv)")
     p.add_argument("--source-col", default="media_source")
-    p.add_argument("--label-col", default="label")
+    p.add_argument("--label-col", default="is_fake")
     p.add_argument("--folds", type=int, default=10)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--metrics-out", required=True, help="Output CSV for fold metrics")

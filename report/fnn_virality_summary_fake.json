@@ -1,0 +1,22 @@
+{
+  "n_propagations": 174,
+  "avg_length": 400.52298850574715,
+  "min_length": 1,
+  "max_length": 22750,
+  "quantiles": [
+    0.5,
+    0.75,
+    0.9,
+    0.95
+  ],
+  "k_prefix": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "files": {
+    "thresholds_csv": "report/fnn_virality_thresholds_fake.csv",
+    "early_csv": "report/fnn_virality_early_fake.csv"
+  }
+}

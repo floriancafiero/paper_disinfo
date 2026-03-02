@@ -1,1 +1,5 @@
 .DS_Store
+FakeNewsNet/data/*.jsonl
+FakeNewsNet/data/fake_news_net/*
+evons/data/evons.csv
+evons/data/*.pt
