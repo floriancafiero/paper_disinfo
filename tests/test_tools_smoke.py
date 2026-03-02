@@ -45,6 +45,56 @@ class ToolScriptsSmokeTests(unittest.TestCase):
                 out_rows = list(csv.DictReader(f))
             self.assertEqual(len(out_rows), 1)
             self.assertEqual(out_rows[0]["model_a"], "A")
+            self.assertEqual(out_rows[0]["holm_feasible_005"], "False")
+            self.assertIn("min_possible_p", out_rows[0])
+            self.assertIn("holm_threshold_005", out_rows[0])
+            self.assertIn("min_folds_for_holm_005", out_rows[0])
+            self.assertEqual(out_rows[0]["min_folds_for_holm_005"], "5")
+
+
+    def test_statistical_evaluation_repeated_stratified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmpdir = Path(tmp)
+            inp = tmpdir / "metrics_repeated.csv"
+            out = tmpdir / "stats_repeated.csv"
+            rows = [
+                ["dataset", "task", "metric", "repeat", "fold", "model", "value"],
+                ["evons", "disinfo", "f1", "0", "0", "A", "0.80"],
+                ["evons", "disinfo", "f1", "0", "0", "B", "0.70"],
+                ["evons", "disinfo", "f1", "0", "1", "A", "0.82"],
+                ["evons", "disinfo", "f1", "0", "1", "B", "0.72"],
+                ["evons", "disinfo", "f1", "1", "0", "A", "0.79"],
+                ["evons", "disinfo", "f1", "1", "0", "B", "0.69"],
+                ["evons", "disinfo", "f1", "1", "1", "A", "0.81"],
+                ["evons", "disinfo", "f1", "1", "1", "B", "0.71"],
+                ["evons", "disinfo", "f1", "2", "0", "A", "0.78"],
+                ["evons", "disinfo", "f1", "2", "0", "B", "0.68"],
+                ["evons", "disinfo", "f1", "2", "1", "A", "0.80"],
+                ["evons", "disinfo", "f1", "2", "1", "B", "0.70"],
+            ]
+            with inp.open("w", newline="", encoding="utf-8") as f:
+                csv.writer(f).writerows(rows)
+
+            self.run_cmd([
+                "python",
+                "tools/statistical_evaluation.py",
+                "--input",
+                str(inp),
+                "--output",
+                str(out),
+                "--repeat-col",
+                "repeat",
+                "--repeated-stratified",
+                "--n-boot",
+                "200",
+            ])
+
+            with out.open(newline="", encoding="utf-8") as f:
+                out_rows = list(csv.DictReader(f))
+            self.assertEqual(len(out_rows), 1)
+            self.assertEqual(out_rows[0]["n_folds"], "6")
+            self.assertEqual(out_rows[0]["n_repeats"], "3")
+            self.assertEqual(out_rows[0]["n_signflip_units"], "3")
 
     def test_evons_source_confounding_audit(self):
         with tempfile.TemporaryDirectory() as tmp:
