@@ -64,9 +64,22 @@ def load_virality_data(csv_path: Path):
     y = df['is_viral'].to_numpy()
 
     source = df['media_source'].to_numpy()
-    avg_eng = df['fb_engagements'].to_numpy(dtype=np.float32)
-    avg_eng = (avg_eng - avg_eng.mean()) / (avg_eng.std() + 1e-6)
-    return df, y, source, avg_eng
+    fb_eng = df['fb_engagements'].to_numpy(dtype=np.float32)
+    return df, y, source, fb_eng
+
+
+def compute_avg_eng_per_source(source_tr, fb_eng_tr, source_va):
+    """Compute per-source mean engagement on train split, then map to train and val indices.
+    Sources unseen in train fall back to the global train mean."""
+    src_to_avg = {}
+    for s in np.unique(source_tr):
+        mask = source_tr == s
+        src_to_avg[s] = fb_eng_tr[mask].mean()
+    global_avg = fb_eng_tr.mean()
+    avg_tr = np.array([src_to_avg[s] for s in source_tr], dtype=np.float32)
+    avg_va = np.array([src_to_avg.get(s, global_avg) for s in source_va], dtype=np.float32)
+    mu, sigma = avg_tr.mean(), avg_tr.std() + 1e-6
+    return (avg_tr - mu) / sigma, (avg_va - mu) / sigma
 
 
 def load_embeddings(data_dir: Path, mode='bert'):
@@ -153,7 +166,7 @@ class GatingMLP(nn.Module):
 
 # %%
 
-def run_cv(title_emb, desc_emb, y, source, avg_eng, model_name, n_splits=10, epochs=10, batch_size=64, lr=1e-3):
+def run_cv(title_emb, desc_emb, y, source, fb_eng, model_name, n_splits=10, epochs=10, batch_size=64, lr=1e-3):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     X_concat = torch.cat([title_emb, desc_emb], dim=1)
     n_sources = int(source.max()) + 1
@@ -161,8 +174,11 @@ def run_cv(title_emb, desc_emb, y, source, avg_eng, model_name, n_splits=10, epo
 
     rows = []
     for fold, (tr, va) in enumerate(skf.split(X_concat.numpy(), y), 1):
-        ds_tr = MultiInputDataset(title_emb[tr], desc_emb[tr], source[tr], avg_eng[tr], y[tr])
-        ds_va = MultiInputDataset(title_emb[va], desc_emb[va], source[va], avg_eng[va], y[va])
+        # Compute per-source avg engagement from training data only (no leakage)
+        avg_eng_tr, avg_eng_va = compute_avg_eng_per_source(source[tr], fb_eng[tr], source[va])
+
+        ds_tr = MultiInputDataset(title_emb[tr], desc_emb[tr], source[tr], avg_eng_tr, y[tr])
+        ds_va = MultiInputDataset(title_emb[va], desc_emb[va], source[va], avg_eng_va, y[va])
         dl_tr = DataLoader(ds_tr, batch_size=batch_size, shuffle=True)
         dl_va = DataLoader(ds_va, batch_size=batch_size, shuffle=False)
 
@@ -222,7 +238,7 @@ def run_cv(title_emb, desc_emb, y, source, avg_eng, model_name, n_splits=10, epo
 
 # %%
 
-df, y, source, avg_eng = load_virality_data(CSV_PATH)
+df, y, source, fb_eng = load_virality_data(CSV_PATH)
 print('Rows:', len(df), '| Positive rate:', y.mean().round(4))
 
 bert_t, bert_d = load_embeddings(DATA_DIR, mode='bert')
@@ -232,11 +248,11 @@ if not (len(bert_t) == len(mis_t) == len(y)):
     raise ValueError('Embeddings and CSV size mismatch')
 
 res = []
-res.append(run_cv(bert_t, bert_d, y, source, avg_eng, model_name='mlp_text'))
-res.append(run_cv(bert_t, bert_d, y, source, avg_eng, model_name='mlp_source'))
-res.append(run_cv(bert_t, bert_d, y, source, avg_eng, model_name='mlp_avg_eng'))
-res.append(run_cv(bert_t, bert_d, y, source, avg_eng, model_name='gating').assign(model='gating_bert'))
-res.append(run_cv(mis_t, mis_d, y, source, avg_eng, model_name='gating').assign(model='gating_mistral'))
+res.append(run_cv(bert_t, bert_d, y, source, fb_eng, model_name='mlp_text'))
+res.append(run_cv(bert_t, bert_d, y, source, fb_eng, model_name='mlp_source'))
+res.append(run_cv(bert_t, bert_d, y, source, fb_eng, model_name='mlp_avg_eng'))
+res.append(run_cv(bert_t, bert_d, y, source, fb_eng, model_name='gating').assign(model='gating_bert'))
+res.append(run_cv(mis_t, mis_d, y, source, fb_eng, model_name='gating').assign(model='gating_mistral'))
 
 all_results = pd.concat(res, ignore_index=True)
 summary = all_results.groupby('model')[['accuracy', 'f1', 'precision', 'recall', 'auc']].mean().sort_values('f1', ascending=False)
