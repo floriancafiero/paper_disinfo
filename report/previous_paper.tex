@@ -67,17 +67,18 @@ Given an item, predict whether it is \textit{viral} under a dataset--specific de
 \subsection{Datasets}
 
 \paragraph{\textsc{Evons}.}
-The dataset comprises $N{=}92{,}969$ news articles with fields: title $t_i$, description $c_i$, source $s_i$, and Facebook engagement $e_i$; binary veracity labels are available. Engagement counts come from Facebook Sharing Debugger (or BuzzSumo when a source was blacklisted) and are provided as aggregated totals (no user--level data). Summary statistics show a highly skewed $e_i$ distribution (median 230; max $\sim 4.78$M). 
-%
-For fake--news detection on \textsc{Evons}, inputs are RoBERTa embeddings of the title and description, concatenated and fed to a small MLP classifier; class imbalance is handled with a weighted loss.
-%
-For virality prediction on \textsc{Evons}, the positive class is the top 5\% in $e_i$ (95th percentile); oversampling and undersampling were tested early but discarded in favor of weighted loss due to equal or worse performance. 
+EVONS contains $N{=}92{,}969$ news items with title $t_i$, description $c_i$, source $s_i$, veracity label $y_i\in\{0,1\}$, and aggregated Facebook engagement $e_i$ (shares+likes+comments). We use the provided article-level records (no user-level graph). For disinformation detection, each item is represented by concatenated title/description embeddings $x_i=[\phi(t_i);\phi(c_i)]$ and classified as $\hat y_i=\mathbb{1}[f(x_i)\ge 0.5]$. For virality, labels are induced by a tail threshold:
+\[
+ v_i = \mathbb{1}[e_i \ge \tau_{0.95}],
+\]
+where $\tau_{0.95}$ is the empirical 95th percentile of engagement. This yields a strongly imbalanced positive class ($\approx 5\%$), so model comparison emphasizes F1/recall and uses weighted objectives.
 
 \paragraph{\textsc{FakeNewsNet}.}
-We use the tweet--series setting built from the repository. Data are anonymized via IDs and require API hydration; obtaining dataset's Politifact split was possible through prior academic sharing, while GossipCop could not be recovered under current constraints.
-Each instance corresponds to a series of tweets referring to the same news article, i.e., a propagation path $S_i{=}{T_{i1},\dots,T_{i n_i}}$. Tweets are represented by text embeddings together with numeric features $(\Delta t_{ij},\textit{followers}{ij},\textit{following}{ij},\textit{verified}{ij},\textit{likes}{ij})$. Temporal values are normalized as delays $\Delta t_{ij}{=}time_{ij}-time^{(0)}_i$ from the first tweet to characterize propagation speed.
-For fake--news detection on \textsc{FakeNewsNet}, the dataset is imbalanced (fake $\approx$30%); models consume the tweet--sequence representation. Ablations show text--only vs.\ numeric--only contributions.
-For virality prediction on \textsc{FakeNewsNet}, total likes per series $L_i{=}\sum_j \textit{likes}_{ij}$ define virality; labels use a median split.
+We use the Politifact portion of FakeNewsNet under a precomputed-embedding protocol (article/tweet content embedded upstream), and train downstream classifiers on fixed vectors. Let $z_i\in\mathbb{R}^{d}$ denote the frozen embedding of instance $i$ (with $d{=}768$ for BERT and $d{=}1024$ for Mistral). Two binary tasks are evaluated on the same representation family: (i) veracity prediction, and (ii) virality prediction with a median label split. For virality, if $L_i$ is total likes associated with instance $i$, we define
+\[
+ v_i = \mathbb{1}[L_i \ge \mathrm{median}(L)].
+\]
+This choice keeps classes approximately balanced and enables direct comparison with EVONS, where virality is defined by a heavy-tail threshold.
 
 
 \section{Methods}
@@ -87,10 +88,20 @@ We detail the representations, models, and training setup for both datasets. An 
 
 \subsection{Text and Numeric Representations}
 \paragraph{Text embeddings.}
-All textual fields (article titles and captions on \textsc{Evons}; tweet texts on \textsc{FakeNewsNet}) are embedded with \textsc{RoBERTa} into 768-dimensional vectors. Where applicable, per-instance inputs are formed by concatenation (e.g., title+caption) before feeding the classifier. A small sensitivity check compares \textsc{RoBERTa} to Mistral’s 1024-d embeddings on one representative model per task/dataset (Section~\ref{subsec:ablation-sensitivity}).
+Embeddings are computed once in a dedicated preprocessing stage and then reused in all cross-validation runs. For the BERT backend, texts are tokenized and passed through a transformer encoder; we keep the final-layer representation of the first token (CLS-style pooling), yielding $d{=}768$ vectors. For the Mistral backend, embeddings are generated through the Mistral embedding API, yielding $d{=}1024$ vectors. In the training/evaluation stage, these precomputed vectors are loaded from disk (not recomputed each run).
 
-\paragraph{Numeric features.}
-On \textsc{FakeNewsNet}, each tweet contributes the five numeric features ${\Delta t,\mathrm{followers},\mathrm{following},\mathrm{verified},\mathrm{likes}}$; non-binary features are log-transformed and standardized within each training fold; the binary \textit{verified} flag is used as is. For fusion models, numeric features are projected to 32d and concatenated with text embeddings per tweet. On \textsc{Evons}, some models additionally incorporate information on article’s source.
+On EVONS, each sample is encoded as
+\[
+ x_i=[\phi(t_i);\phi(c_i)]\in\mathbb{R}^{2d},
+\]
+while on FakeNewsNet each instance is represented by a single vector $z_i\in\mathbb{R}^{d}$. These frozen vectors are the direct inputs to MLP and classical classifiers; no end-to-end language-model finetuning is performed.
+
+\paragraph{Auxiliary numeric signals (EVONS virality).}
+For EVONS virality variants, we augment text with source-level scalar/contextual variables derived within each training split: source identity (embedded category) and source mean engagement. Formally, for source $s$, the training-fold statistic is
+\[
+ \mu_s = \frac{1}{|\mathcal{I}^{\mathrm{train}}_s|}\sum_{i\in\mathcal{I}^{\mathrm{train}}_s} e_i,
+\]
+then associated to validation items sharing source $s$ (with global fallback for unseen sources). This split-local construction prevents target leakage across folds.
 
 \subsection{Models on \textsc{Evons}}
 \label{subsec:evons-methods}
@@ -109,32 +120,35 @@ For the class imbalance in virality, we tested oversampling/undersampling early 
 
 \subsection{Models on \textsc{FakeNewsNet}}
 \label{subsec:fakenewsnet-methods}
-\paragraph{Input encoding (series).}
-Each instance is a series $S_i=(T_{i1},\dots,T_{i\ell})$ of tweets. For each $T_{ij}$, we form $x_{ij}\in\mathbb{R}^{800}$ by concatenating a 768d text embedding with a 32d projection of the 5 numeric features; the sequence $(x_{i1},\dots,x_{i\ell})$ is the model input. 
+\paragraph{Input representation.}
+FakeNewsNet experiments are conducted on item-level precomputed textual embeddings (Politifact subset) with two backends (BERT and Mistral). Rather than training sequence encoders end-to-end, each item is represented by a fixed vector and passed directly to supervised classifiers.
 
-\paragraph{Sequence encoders}
+\paragraph{Model families.}
+For both FakeNewsNet tasks (fake-news detection and virality prediction), we evaluate the same classical and lightweight neural families across embedding backends:
 \begin{enumerate}
-\item \textbf{BiGRU:} bidirectional GRU (128 per direction) over the sequence; last hidden state $\to$ two-layer MLP classifier. Variants replace GRU with \textbf{RNN} or \textbf{LSTM} (same head). 
-\item \textbf{CNN:} two 1-D conv layers (kernel=3, padding=1, 128 channels) along the sequence, max-pooling over time, then a two-layer perceptron. 
-\item \textbf{Transformer encoder:} one bidirectional encoder layer (8 heads; FFN dim=512) with learned positional embeddings; max-pool over time, then two-layer perceptron. 
+\item \textbf{MLP} (feed-forward classifier on top of frozen embeddings),
+\item \textbf{Logistic Regression},
+\item \textbf{Random Forest},
+\item \textbf{XGBoost} (included when library support is available).
 \end{enumerate}
+This design keeps the model stack homogeneous across tasks, so observed differences are mainly attributable to task definition and label construction rather than to architecture changes.
 
 \subsection{Training, Model Selection, and Baselines}
 \label{subsec:train}
 \paragraph{Loss and class weighting.}
-All models use binary cross-entropy; positive-class weights address imbalance (small for fake-news on \textsc{Evons}, larger for virality on \textsc{Evons}). 
+Neural models are trained with binary cross-entropy on sigmoid outputs. For strongly imbalanced settings (notably EVONS virality), weighting is favored over resampling to improve minority-class recall while preserving stable optimization.
 
 \paragraph{Cross-validation and selection.}
-We use stratified 10-fold cross-validation. Unless otherwise noted, the best epoch per fold is selected by \textbf{F1} on the held-out fold; metrics are computed on test splits only (Accuracy, Balanced Accuracy, Precision, Recall, F1, ROC-AUC; reported for the positive class). 
+The evaluation protocol uses repeated stratified hold-out via \texttt{StratifiedShuffleSplit} (10 splits, 80/20 train--validation partition), with fixed random seed for reproducibility. Metrics are averaged across splits and reported as Accuracy, Precision, Recall, F1, and ROC--AUC; in imbalanced conditions, F1/Recall are emphasized over Accuracy.
 
 \paragraph{F-$\beta$ analysis (virality).}
-For virality on \textsc{Evons}, we additionally explore model selection by F-$\beta$ with recall up-weighted relative to precision; we then report the resulting trade-offs (precision drops, recall rises). Baselines are unchanged as they are not trained with F-$\beta$ selection. 
+For EVONS virality, we retain an operating-point analysis where selection may prioritize recall through an F-$\beta$ criterion ($\beta>1$). This supplements the main F1-based comparison and makes explicit the precision--recall trade-off relevant to screening use-cases.
 
 \paragraph{Classical baselines.}
-On \textsc{Evons}, we include dummy (stratified), logistic regression, and random forest—each fed with the same RoBERTa text embeddings as the MLP—to contextualize the effect of non-linearity. 
+Classical baselines are part of the core benchmark rather than only auxiliary checks. Across datasets, we report Logistic Regression and Random Forest systematically, and XGBoost when installed, alongside neural MLP variants over the same frozen embeddings.
 
 \paragraph{Optimization and hyperparameters.}
-We did not run automatic hyperparameter search; a small manual sweep identified a fixed configuration shared within model families. \textsc{Evons}: LR $1\times10^{-4}$, weight decay $0.01$, dropout $0.1$, 50 epochs; \textsc{FakeNewsNet}: LR $8\times10^{-5}$, weight decay $0.01$, dropout $0.1$, 100 epochs. Linear LR scheduler; no early stopping. 
+Hyperparameters are fixed and explicit in the current scripts: for MLPs, Adam with learning rate $10^{-3}$, batch size $64$, and 12 epochs on EVONS/FakeNewsNet disinformation (10 epochs for EVONS virality gating variants); split generation uses \texttt{StratifiedShuffleSplit} with \texttt{random\_state=42}. Classical models use fixed defaults per run family (Logistic Regression: \texttt{max\_iter=1000}; Random Forest: \texttt{n\_estimators=250}, \texttt{random\_state=42}; XGBoost when available: \texttt{n\_estimators=250}, \texttt{max\_depth=6}, \texttt{learning\_rate=0.05}, \texttt{subsample=0.8}, \texttt{colsample\_bytree=0.8}).
 
 \subsection{Ablations and Sensitivity Analyses} \label{subsec:ablation-sensitivity}
 \paragraph{Text vs.\ numeric ablation (FakeNewsNet).}
