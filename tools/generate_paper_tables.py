@@ -21,6 +21,10 @@ def _fmt(x: float) -> str:
     return f"{x:.3f}"
 
 
+def _esc(s: str) -> str:
+    return s.replace("_", r"\_")
+
+
 def build_main_table() -> str:
     evons_fake = _load_summary("colab_no_embeddings/outputs/evons_disinformation_merged_summary.csv")
     evons_vir = _load_summary("colab_no_embeddings/outputs/evons_virality_merged_summary.csv")
@@ -56,8 +60,8 @@ def build_main_table() -> str:
 
         best_model = df.iloc[0]["model"]
         for _, r in df.iterrows():
-            model = r["model"]
-            model_disp = f"\\textbf{{{model}}}" if model == best_model else model
+            model = _esc(r["model"])
+            model_disp = f"\\textbf{{{model}}}" if r["model"] == best_model else model
             lines.append(
                 f" & {model_disp} & {_fmt(r['accuracy'])} & {_fmt(r['f1'])} & {_fmt(r['precision'])} & {_fmt(r['recall'])} & {_fmt(r['auc'])} \\\\" 
             )
@@ -110,9 +114,11 @@ def build_significance_table(stats_csv: Path) -> str:
             if r["model_a"] == best:
                 ci_low = r["ci_low"]
                 ci_high = r["ci_high"]
+                effect_size = r["effect_size"]
             else:
                 ci_low = -r["ci_high"]
                 ci_high = -r["ci_low"]
+                effect_size = -r["effect_size"]
             rows.append(
                 {
                     "dataset_task": f"{dataset}/{task}",
@@ -122,6 +128,7 @@ def build_significance_table(stats_csv: Path) -> str:
                     "ci": f"[{ci_low:.4f}, {ci_high:.4f}]",
                     "p_holm": r["p_value_holm"],
                     "sig": "yes" if bool(r["significant_holm_005"]) else "no",
+                    "effect_size": effect_size,
                 }
             )
 
@@ -135,15 +142,15 @@ def build_significance_table(stats_csv: Path) -> str:
         "\\small",
         "\\caption{Top pairwise F1 comparisons (best model vs strongest alternatives per dataset/task).}",
         "\\label{tab:stats-top-pairs}",
-        "\\begin{tabular}{lllcccl}",
+        "\\begin{tabular}{lllccccl}",
         "\\toprule",
-        "Dataset/Task & Best & Compared to & $\\Delta$F1 & 95\\% CI & Holm-$p$ & Sig. " + r"\\",
+        "Dataset/Task & Best & Compared to & $\\Delta$F1 & 95\\% CI & Holm-$p$ & Effect size & Sig. " + r"\\",
         "\\midrule",
     ]
 
     for _, r in out.iterrows():
         lines.append(
-            f"{r['dataset_task']} & {r['best']} & {r['opponent']} & {r['diff']:.4f} & {r['ci']} & {r['p_holm']:.4f} & {r['sig']} \\\\" 
+            f"{r['dataset_task']} & {_esc(r['best'])} & {_esc(r['opponent'])} & {r['diff']:.4f} & {r['ci']} & {r['p_holm']:.4f} & {r['effect_size']:.4f} & {r['sig']} \\\\"
         )
 
     lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table*}", ""])

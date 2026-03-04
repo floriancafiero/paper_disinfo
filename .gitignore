@@ -1,4 +1,5 @@
 .DS_Store
+CLAUDE.md
 FakeNewsNet/data/*.jsonl
 FakeNewsNet/data/fake_news_net/*
 evons/data/evons.csv

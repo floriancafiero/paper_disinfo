@@ -1,0 +1,10 @@
+\subsection{Datasets}
+
+\paragraph{\textsc{Evons}.}
+The dataset comprises $N{=}92{,}969$ news articles with fields: title $t_i$, description $c_i$, source $s_i$, and Facebook engagement $e_i$; binary veracity labels are available. Engagement counts come from Facebook Sharing Debugger (or BuzzSumo when a source was blacklisted) and are provided as aggregated totals (no user--level data). Summary statistics show a highly skewed $e_i$ distribution (median 230; max $\sim 4.78$M). For virality prediction on \textsc{Evons}, the positive class is the top 5\% in $e_i$ (95th percentile); oversampling and undersampling were tested early but discarded in favor of weighted loss due to equal or worse performance. 
+
+\paragraph{\textsc{FakeNewsNet}.}
+We use the tweet--series setting built from the repository. Data are anonymized via IDs and require API hydration; obtaining dataset's Politifact split was possible through prior academic sharing, while GossipCop could not be recovered under current constraints.
+Each instance corresponds to a series of tweets referring to the same news article, i.e., a propagation path $S_i{=}{T_{i1},\dots,T_{i n_i}}$. Tweets are represented by text embeddings together with numeric features $(\Delta t_{ij},\textit{followers}{ij},\textit{following}{ij},\textit{verified}{ij},\textit{likes}{ij})$. Temporal values are normalized as delays $\Delta t_{ij}{=}time_{ij}-time^{(0)}_i$ from the first tweet to characterize propagation speed.
+For fake--news detection on \textsc{FakeNewsNet}, the dataset is imbalanced (fake $\approx$30%); models consume the tweet--sequence representation. Ablations show text--only vs.\ numeric--only contributions.
+For virality prediction on \textsc{FakeNewsNet}, total likes per series $L_i{=}\sum_j \textit{likes}_{ij}$ define virality; labels use a median split.
