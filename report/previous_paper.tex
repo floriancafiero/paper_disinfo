@@ -88,17 +88,13 @@ We detail the representations, models, and training setup for both datasets. An 
 
 \subsection{Text and Numeric Representations}
 \paragraph{Text embeddings.}
-Embeddings are computed once in a dedicated preprocessing stage and then reused in all cross-validation runs. For the BERT backend, texts are tokenized and encoded with a transformer; we keep the final-layer first-token representation (CLS-style pooling), yielding $d{=}768$ vectors. For the Mistral backend, embeddings are generated with the Mistral embedding API, yielding $d{=}1024$ vectors.
+Embeddings are computed once in a dedicated preprocessing stage and then reused in all cross-validation runs. For the BERT backend, texts are tokenized and passed through a transformer encoder; we keep the final-layer representation of the first token (CLS-style pooling), yielding $d{=}768$ vectors. For the Mistral backend, embeddings are generated through the Mistral embedding API, yielding $d{=}1024$ vectors. In the training/evaluation stage, these precomputed vectors are loaded from disk (not recomputed each run).
 
 On EVONS, each sample is encoded as
 \[
- x_i=[\phi(t_i);\phi(c_i)]\in\mathbb{R}^{2d}.
+ x_i=[\phi(t_i);\phi(c_i)]\in\mathbb{R}^{2d},
 \]
-On FakeNewsNet, preprocessing first builds tweet-level vectors along each propagation path, then forms a path-level representation used by downstream classifiers. If $S_i=(T_{i1},\dots,T_{i\ell_i})$ and $h_{ij}\in\mathbb{R}^{d}$ is the embedding of tweet $T_{ij}$, the path-level representation is
-\[
- z_i = \frac{1}{\ell_i}\sum_{j=1}^{\ell_i} h_{ij}\in\mathbb{R}^{d}.
-\]
-These frozen vectors are used directly by MLP and classical classifiers; no end-to-end language-model finetuning is performed.
+while on FakeNewsNet each instance is represented by a single vector $z_i\in\mathbb{R}^{d}$. These frozen vectors are the direct inputs to MLP and classical classifiers; no end-to-end language-model finetuning is performed.
 
 \paragraph{Auxiliary numeric signals (EVONS virality).}
 For EVONS virality variants, we augment text with source-level scalar/contextual variables derived within each training split: source identity (embedded category) and source mean engagement. Formally, for source $s$, the training-fold statistic is
@@ -124,26 +120,18 @@ For the class imbalance in virality, we tested oversampling/undersampling early 
 
 \subsection{Models on \textsc{FakeNewsNet}}
 \label{subsec:fakenewsnet-methods}
-\paragraph{Input encoding (series).}
-Each FakeNewsNet instance is a tweet propagation path $S_i=(T_{i1},\dots,T_{i\ell_i})$. At tweet level, textual embedding and metadata can be combined as
-\[
- x_{ij}=[h_{ij};P(n_{ij})]\in\mathbb{R}^{800},
-\]
-where $h_{ij}\in\mathbb{R}^{768}$ is the text embedding, $n_{ij}\in\mathbb{R}^{5}$ collects $(\Delta t,\text{followers},\text{following},\text{verified},\text{likes})$, and $P:\mathbb{R}^{5}\to\mathbb{R}^{32}$ is a learned projection. For model estimation, each variable-length path is mapped to a fixed-size vector by mean pooling,
-\[
- z_i=\frac{1}{\ell_i}\sum_{j=1}^{\ell_i} h_{ij}\in\mathbb{R}^{d},
-\]
-with $d\in\{768,1024\}$ for BERT/Mistral.
+\paragraph{Input representation.}
+FakeNewsNet experiments are conducted on item-level precomputed textual embeddings (Politifact subset) with two backends (BERT and Mistral). Rather than training sequence encoders end-to-end, each item is represented by a fixed vector and passed directly to supervised classifiers.
 
 \paragraph{Model families.}
-For both FakeNewsNet tasks (fake-news detection and virality prediction), we evaluate the same four families across both embedding backends:
+For both FakeNewsNet tasks (fake-news detection and virality prediction), we evaluate the same classical and lightweight neural families across embedding backends:
 \begin{enumerate}
-\item \textbf{MLP} (feed-forward classifier on frozen embeddings),
+\item \textbf{MLP} (feed-forward classifier on top of frozen embeddings),
 \item \textbf{Logistic Regression},
 \item \textbf{Random Forest},
-\item \textbf{XGBoost}.
+\item \textbf{XGBoost} (included when library support is available).
 \end{enumerate}
-XGBoost is included in the benchmark comparisons. Using the same model stack for both tasks isolates the effect of label definition and representation choice from architecture changes.
+This design keeps the model stack homogeneous across tasks, so observed differences are mainly attributable to task definition and label construction rather than to architecture changes.
 
 \subsection{Training, Model Selection, and Baselines}
 \label{subsec:train}
@@ -157,10 +145,10 @@ The evaluation protocol uses repeated stratified hold-out via \texttt{Stratified
 For EVONS virality, we retain an operating-point analysis where selection may prioritize recall through an F-$\beta$ criterion ($\beta>1$). This supplements the main F1-based comparison and makes explicit the precision--recall trade-off relevant to screening use-cases.
 
 \paragraph{Classical baselines.}
-Classical baselines are part of the core benchmark rather than only auxiliary checks. Across datasets, we report Logistic Regression, Random Forest, and XGBoost alongside neural MLP variants over the same frozen embeddings.
+Classical baselines are part of the core benchmark rather than only auxiliary checks. Across datasets, we report Logistic Regression and Random Forest systematically, and XGBoost when installed, alongside neural MLP variants over the same frozen embeddings.
 
 \paragraph{Optimization and hyperparameters.}
-We use a fixed training protocol across experiments. Neural MLP variants are optimized with Adam (learning rate $10^{-3}$, batch size $64$) for 12 epochs in EVONS/FakeNewsNet disinformation and 10 epochs in EVONS virality gating settings. Evaluation splits are generated with \texttt{StratifiedShuffleSplit} (10 repetitions, 80/20 partition, seed 42). Classical baselines use fixed settings: Logistic Regression (\texttt{max\_iter=1000}), Random Forest (\texttt{n\_estimators=250}, seed 42), and XGBoost (\texttt{n\_estimators=250}, \texttt{max\_depth=6}, \texttt{learning\_rate=0.05}, \texttt{subsample=0.8}, \texttt{colsample\_bytree=0.8}).
+Hyperparameters are fixed and explicit in the current scripts: for MLPs, Adam with learning rate $10^{-3}$, batch size $64$, and 12 epochs on EVONS/FakeNewsNet disinformation (10 epochs for EVONS virality gating variants); split generation uses \texttt{StratifiedShuffleSplit} with \texttt{random\_state=42}. Classical models use fixed defaults per run family (Logistic Regression: \texttt{max\_iter=1000}; Random Forest: \texttt{n\_estimators=250}, \texttt{random\_state=42}; XGBoost when available: \texttt{n\_estimators=250}, \texttt{max\_depth=6}, \texttt{learning\_rate=0.05}, \texttt{subsample=0.8}, \texttt{colsample\_bytree=0.8}).
 
 \subsection{Ablations and Sensitivity Analyses} \label{subsec:ablation-sensitivity}
 \paragraph{Text vs.\ numeric ablation (FakeNewsNet).}
