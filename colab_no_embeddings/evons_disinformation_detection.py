@@ -24,7 +24,10 @@ from torch.utils.data import Dataset, DataLoader
 
 from tqdm.auto import tqdm
 
-from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, train_test_split
+import sys
+sys.path.insert(0, str(Path.cwd() / 'tools'))
+from imbalanced_evaluation import evaluate_with_calibration
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -133,13 +136,15 @@ def train_eval_mlp(title_emb, desc_emb, y, epochs=12, batch_size=64, lr=1e-3, n_
 
     fold_metrics = []
     for fold, (tr, va) in enumerate(skf.split(X.numpy(), y), 1):
+        fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr], random_state=1000 + fold)
         model = MLP(input_dim=X.shape[1]).to(device)
         opt = torch.optim.Adam(model.parameters(), lr=lr)
         loss_fn = nn.BCEWithLogitsLoss()
 
-        train_ds = PairDataset(title_emb[tr], desc_emb[tr], y[tr])
+        train_ds = PairDataset(title_emb[fit], desc_emb[fit], y[fit])
         val_ds = PairDataset(title_emb[va], desc_emb[va], y[va])
         train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+        cal_loader = DataLoader(PairDataset(title_emb[cal], desc_emb[cal], y[cal]), batch_size=batch_size, shuffle=False)
         val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
         model.train()
@@ -153,13 +158,16 @@ def train_eval_mlp(title_emb, desc_emb, y, epochs=12, batch_size=64, lr=1e-3, n_
                 opt.step()
 
         model.eval()
-        probs = []
-        with torch.no_grad():
-            for xb, _ in val_loader:
-                xb = xb.to(device)
-                probs.append(torch.sigmoid(model(xb)).cpu().numpy())
-        probs = np.concatenate(probs)
-        m = compute_metrics(y[va], probs)
+        def predict_prob(loader):
+            values = []
+            with torch.no_grad():
+                for xb, _ in loader:
+                    values.append(torch.sigmoid(model(xb.to(device))).cpu().numpy())
+            return np.concatenate(values)
+        m = evaluate_with_calibration(y[va], predict_prob(val_loader),
+                                      y[cal], predict_prob(cal_loader))
+        m['n_fit'] = len(fit)
+        m['n_calibration'] = len(cal)
         m['fold'] = fold
         fold_metrics.append(m)
 
@@ -183,13 +191,17 @@ def run_baselines(title_emb, desc_emb, y, n_splits=10):
     rows = []
     for name, model in models.items():
         for fold, (tr, va) in enumerate(skf.split(X, y), 1):
-            model.fit(X[tr], y[tr])
-            if hasattr(model, 'predict_proba'):
-                prob = model.predict_proba(X[va])[:, 1]
-            else:
-                prob = model.decision_function(X[va])
-                prob = 1 / (1 + np.exp(-prob))
-            m = compute_metrics(y[va], prob)
+        fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr], random_state=1000 + fold)
+            model.fit(X[fit], y[fit])
+            def predict_prob(features):
+                if hasattr(model, 'predict_proba'):
+                    return model.predict_proba(features)[:, 1]
+                raw = model.decision_function(features)
+                return 1 / (1 + np.exp(-raw))
+            m = evaluate_with_calibration(y[va], predict_prob(X[va]),
+                                          y[cal], predict_prob(X[cal]))
+            m['n_fit'] = len(fit)
+            m['n_calibration'] = len(cal)
             m['model'] = name
             m['fold'] = fold
             rows.append(m)
@@ -216,7 +228,7 @@ for mode in ['bert', 'mistral']:
     results.append(base_df)
 
 all_results = pd.concat(results, ignore_index=True)
-summary = all_results.groupby('model')[['accuracy', 'f1', 'precision', 'recall', 'auc']].mean().sort_values('f1', ascending=False)
+summary = all_results.groupby('model')[['accuracy', 'f1', 'precision', 'recall', 'auc', 'pr_auc', 'pr_baseline', 'majority_accuracy', 'majority_f1', 'f1_tuned', 'precision_tuned', 'recall_tuned', 'threshold_tuned']].mean().sort_values('f1_tuned', ascending=False)
 summary
 
 
@@ -236,7 +248,7 @@ PUB_SUMMARY_FILENAME = 'evons_disinformation_publication_summary.md'
 # Build a publication-ready markdown synthesis from summary dataframe
 summary_for_pub = summary.copy()
 summary_for_pub = summary_for_pub.reset_index()
-summary_for_pub[['accuracy', 'f1', 'precision', 'recall', 'auc']] = summary_for_pub[['accuracy', 'f1', 'precision', 'recall', 'auc']].round(4)
+summary_for_pub = summary_for_pub.round(4)
 
 top_model = summary_for_pub.iloc[0]
 md_lines = [
