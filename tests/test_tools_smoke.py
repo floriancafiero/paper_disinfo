@@ -105,13 +105,13 @@ class ToolScriptsSmokeTests(unittest.TestCase):
             folds_out = tmpdir / "folds.csv"
 
             rows = [
-                ["id", "media_source", "label"],
-                ["1", "src_a", "fake"],
-                ["2", "src_a", "fake"],
-                ["3", "src_b", "real"],
-                ["4", "src_b", "real"],
-                ["5", "src_c", "fake"],
-                ["6", "src_c", "real"],
+                ["id", "media_source", "is_fake"],
+                ["1", "src_a", "1"],
+                ["2", "src_a", "1"],
+                ["3", "src_b", "0"],
+                ["4", "src_b", "0"],
+                ["5", "src_c", "1"],
+                ["6", "src_c", "0"],
             ]
             with inp.open("w", newline="", encoding="utf-8") as f:
                 csv.writer(f).writerows(rows)
