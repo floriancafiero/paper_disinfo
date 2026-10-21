@@ -146,8 +146,11 @@ def main():
     args = parser.parse_args()
     try:
         present = check()
-        if args.stage not in ("check", "pack") and not present:
-            raise FileNotFoundError("Restore all required files above; see handoff README.")
+        audit_inputs = [REQUIRED["EVONS"][0], *REQUIRED["FakeNewsNet"][:2]]
+        if args.stage in ("audit", "all") and any(not p.is_file() for p in audit_inputs):
+            raise FileNotFoundError("Audits need EVONS CSV and both PolitiFact JSONLs.")
+        if args.stage in ("train", "all") and not present:
+            raise FileNotFoundError("Training needs all raw datasets AND the precomputed embeddings.")
         if args.stage in ("audit", "all"):
             audit()
         if args.stage in ("train", "all"):
