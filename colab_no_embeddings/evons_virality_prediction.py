@@ -63,7 +63,10 @@ def load_virality_data(csv_path: Path):
     df['description'] = df['description'].fillna('')
     df['media_source'] = df['media_source'].astype('category').cat.codes
 
-    thr = df['fb_engagements'].quantile(0.95)
+    q = float(os.environ.get('VIRALITY_QUANTILE', '0.95'))
+    if not 0 < q < 1:
+        raise ValueError('VIRALITY_QUANTILE must lie strictly between 0 and 1')
+    thr = df['fb_engagements'].quantile(q)
     df['is_viral'] = (df['fb_engagements'] > thr).astype(int)
     y = df['is_viral'].to_numpy()
 
@@ -270,7 +273,8 @@ summary
 
 # %%
 
-OUT_DIR = ROOT / 'colab_no_embeddings' / 'outputs'
+Q_LABEL = str(int(round(float(os.environ.get('VIRALITY_QUANTILE', '0.95')) * 100)))
+OUT_DIR = ROOT / 'colab_no_embeddings' / 'outputs' / f'evons_virality_q{Q_LABEL}'
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 all_results.to_csv(OUT_DIR / 'evons_virality_merged_cv_results.csv', index=False)
 summary.to_csv(OUT_DIR / 'evons_virality_merged_summary.csv')
