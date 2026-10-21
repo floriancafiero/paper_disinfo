@@ -48,8 +48,7 @@ may reflect selection effects.
 - Unlike the earlier full-dataset analysis, this excludes very short cascades
   from the fixed-cohort evaluation. Do not directly compare its AUC with
   original Fig. 2 as if only the target changed; the population changes too.
-  For strict comparisons, run the original total-engagement calculation on
-  the identical fixed cohort as a paired companion analysis.
+  **The same output CSV now includes the total-engagement AUC and AP on this\n  identical selected cohort**, so use these matched columns for direct\n  total-vs-future comparisons.
 - An AUC of NaN signals a degenerate binary target, not poor ranking.
 - Scores are calculated without fit, so in-sample rank AUC is not subject to
   fitted-model leakage. These results are descriptive and not causal.
