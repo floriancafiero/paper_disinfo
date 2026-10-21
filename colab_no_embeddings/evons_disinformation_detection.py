@@ -83,7 +83,7 @@ def load_embeddings(data_dir: Path, mode='bert'):
         raise ValueError('mode must be bert or mistral')
     if len(t) != len(d):
         raise ValueError('Title/desc embeddings size mismatch.')
-    return t.float(), d.float()
+    return torch.as_tensor(t, dtype=torch.float32), torch.as_tensor(d, dtype=torch.float32)
 
 
 class PairDataset(Dataset):
