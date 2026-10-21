@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = [
     ROOT / "colab_no_embeddings" / "evons_disinformation_detection.py",
     ROOT / "colab_no_embeddings" / "evons_virality_prediction.py",
+    ROOT / "tools" / "colleague_revision_run.py",
 ]
 NOTEBOOKS = [
     ROOT / "colab_no_embeddings" / f"{task}.ipynb"
