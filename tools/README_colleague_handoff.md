@@ -68,9 +68,13 @@ Les ressources de référence dans les README :
 python tools/colleague_revision_run.py --stage check
 ```
 
-La console doit afficher `OK` pour **tous** les chemins, sans
-`MISSING`. Ce contrôle vérifie les fichiers, mais pas l'intégrité
-des embeddings ni leur alignement exact avec les JSONL/CSV.
+Pour le **premier audit**, seuls `evons.csv` et les deux JSONL
+FakeNewsNet doivent apparaître `OK`. Les embeddings peuvent encore
+apparaître `MISSING` : c'est normal tant qu'on ne relance pas les
+classifieurs. Pour le **réentraînement**, en revanche, tous les
+chemins doivent apparaître `OK`. Le contrôle vérifie la présence et
+la taille des fichiers, mais ni l'intégrité des embeddings ni leur
+alignement exact avec les JSONL/CSV.
 
 ## 4. Audits rapides — commencer par ici
 
@@ -113,7 +117,8 @@ versions des principales bibliothèques et les erreurs éventuelles.
 
 Ne pas transmettre : les CSV d'articles bruts, les JSONL de tweets,
 les fichiers `.pt`, ni les notebooks Jupyter exécutés (leurs
-cellules pourraient contenir des contenus sensibles). **Ne rien
+cellules pourraient contenir des contenus sensibles ; notre lanceur
+ne les enregistre désormais pas). **Ne rien
 pousser vers GitHub**, y compris les résultats, sans inspection.
 
 Pour une exécution interrompue, envoyer `revision_results/RUN_FAILED.txt`
