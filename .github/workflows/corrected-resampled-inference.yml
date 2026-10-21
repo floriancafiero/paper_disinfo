@@ -1,0 +1,31 @@
+name: corrected-resampled-inference
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/corrected_resampled_tests.py'
+      - 'combined_cv.csv'
+      - '.github/workflows/corrected-resampled-inference.yml'
+
+jobs:
+  corrected-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install SciPy
+        run: python -m pip install scipy
+      - name: Corrected comparisons for historical F1
+        run: |
+          mkdir -p report
+          python tools/corrected_resampled_tests.py \
+            --input combined_cv.csv \
+            --output report/stats_corrected_resampled_f1.csv \
+            --metric f1 --train-fraction 0.8
+      - uses: actions/upload-artifact@v4
+        with:
+          name: historical-corrected-resampled-f1
+          path: report/stats_corrected_resampled_f1.csv
