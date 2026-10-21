@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Virality definition sensitivity + early-signal audit for FakeNewsNet propagations.
+"""Virality definition sensitivity + early-signal audit for FakeNewsNet propagations.\n\nConvention matches the training scripts: positive iff total > quantile.\nPreviously archived output CSVs used >= and remain unchanged.
 
 Uses already preprocessed propagation JSONL (ordered sequences) and does not
 require embedding recomputation.
@@ -101,7 +101,7 @@ def summarize_thresholds(totals: Sequence[float], qs: Sequence[float]) -> List[D
     rows = []
     for q in qs:
         thr = quantile(totals, q)
-        y = [1 if v >= thr else 0 for v in totals]
+        y = [1 if v > thr else 0 for v in totals]
         pos_rate = sum(y) / len(y)
         rows.append(
             {
@@ -123,7 +123,7 @@ def early_signal_rows(
     rows: List[Dict[str, float]] = []
     for q in qs:
         thr = quantile(totals, q)
-        labels = [1 if t >= thr else 0 for t in totals]
+        labels = [1 if t > thr else 0 for t in totals]
         for k, pref in sorted(prefixes.items()):
             corr = pearson(pref, totals)
             auc = auc_from_scores(pref, labels)
