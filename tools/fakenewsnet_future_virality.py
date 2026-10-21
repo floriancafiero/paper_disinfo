@@ -111,9 +111,12 @@ def prospective_rows(sequences, ks=(1, 3, 5, 10),
             raise ValueError(f"No sequences with enough later tweets for k={k}")
         prefixes = [sum(s[:k]) for s in selected]
         futures = [sum(s[k:]) for s in selected]
+        totals = [p + future for p, future in zip(prefixes, futures)]
         for q in qs:
             thr = quantile(futures, q)
             labels = [int(f > thr) for f in futures]
+            total_thr = quantile(totals, q)
+            total_labels = [int(t > total_thr) for t in totals]
             n_pos = sum(labels)
             rows.append({
                 "cohort": cohort, "quantile": q, "k_prefix_tweets": k,
@@ -121,6 +124,10 @@ def prospective_rows(sequences, ks=(1, 3, 5, 10),
                 "n_negative": len(selected) - n_pos,
                 "positive_rate": n_pos / len(selected),
                 "threshold_future_likes": thr,
+                "threshold_total_likes_matched_cohort": total_thr,
+                "n_positive_total_matched_cohort": sum(total_labels),
+                "auc_prefix_for_total_label_matched_cohort": auc(prefixes, total_labels),
+                "average_precision_prefix_for_total_label_matched_cohort": average_precision(prefixes, total_labels),
                 "auc_prefix_for_future_label": auc(prefixes, labels),
                 "average_precision_prefix_for_future_label": average_precision(prefixes, labels),
                 "ap_prevalence_baseline": n_pos / len(selected),
@@ -160,7 +167,7 @@ def main():
         "coverage": coverage,
         "auc_definition": "rank-based ROC-AUC of raw prefix engagements; no fitted model",
         "average_precision_definition": "non-interpolated AP, with score ties grouped",
-        "warning": "This analysis is observational: count of later tweets varies; no causal claim.",
+        "warning": "Total and future AUCs now use exactly the same story cohort at each k; the binary targets differ, and later tweet counts vary.",
     }
     Path(args.summary_out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.summary_out).write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
