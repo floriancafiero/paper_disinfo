@@ -1,0 +1,29 @@
+% Historical 80/20 resampled CV ONLY. Do not mix with 60/20/20 reruns.
+% Nadeau-Bengio corrected paired t, 10 splits, Holm within dataset/task/metric.
+\\begin{table*}[t]
+\\centering
+\\small
+\\caption{Selected historical F1 comparisons with corrected resampled inference. Model rankings and scores come from the original 80/20 splits; inference assumes matched fold membership and does not replace full revised-protocol reruns.}
+\\label{tab:stats-corrected-historical}
+\\begin{tabular}{lllrrrl}
+\\toprule
+Dataset/task & Best model & Alternative & $\\Delta$ F1 & 95\\% CI & Holm-$p$ & Sig. \\\\
+\\midrule
+evons/disinformation & mlp\\_mistral & mlp\\_bert & 0.0078 & [0.0048, 0.0108] & 0.0011 & yes \\\\
+evons/disinformation & mlp\\_mistral & logreg\\_mistral & 0.0159 & [0.0131, 0.0188] & 4.52e-6 & yes \\\\
+evons/disinformation & mlp\\_mistral & xgboost\\_bert & 0.0188 & [0.0160, 0.0216] & 1.38e-6 & yes \\\\
+\\midrule
+evons/virality & gating\\_mistral & mlp\\_avg\\_eng & 0.2253 & [0.1048, 0.3458] & 0.0155 & yes \\\\
+evons/virality & gating\\_mistral & mlp\\_source & 0.2279 & [0.1424, 0.3135] & 0.0016 & yes \\\\
+evons/virality & gating\\_mistral & gating\\_bert & 0.3056 & [0.2425, 0.3687] & 1.67e-5 & yes \\\\
+\\midrule
+fakenewsnet/disinformation & rf\\_bert & mlp\\_mistral & 0.0036 & [-0.0479, 0.0550] & 1.0000 & no \\\\
+fakenewsnet/disinformation & rf\\_bert & mlp\\_bert & 0.0114 & [-0.0307, 0.0535] & 1.0000 & no \\\\
+fakenewsnet/disinformation & rf\\_bert & xgboost\\_bert & 0.0256 & [-0.0076, 0.0589] & 1.0000 & no \\\\
+\\midrule
+fakenewsnet/virality & xgboost\\_bert & mlp\\_bert & 0.0052 & [-0.0414, 0.0519] & 1.0000 & no \\\\
+fakenewsnet/virality & xgboost\\_bert & logreg\\_mistral & 0.0055 & [-0.0253, 0.0363] & 1.0000 & no \\\\
+fakenewsnet/virality & xgboost\\_bert & logreg\\_bert & 0.0117 & [-0.0383, 0.0617] & 1.0000 & no \\\\
+\\bottomrule
+\\end{tabular}
+\\end{table*}
