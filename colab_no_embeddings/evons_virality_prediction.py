@@ -88,7 +88,7 @@ def load_embeddings(data_dir: Path, mode='bert'):
     else:
         t = torch.load(data_dir / 'title_embeddings_mistral.pt', map_location='cpu')
         d = torch.load(data_dir / 'desc_embeddings_mistral.pt', map_location='cpu')
-    return t.float(), d.float()
+    return torch.as_tensor(t, dtype=torch.float32), torch.as_tensor(d, dtype=torch.float32)
 
 
 def compute_metrics(y_true, y_prob, thr=0.5):
