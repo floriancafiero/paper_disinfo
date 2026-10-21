@@ -25,6 +25,8 @@ jobs:
             --input combined_cv.csv \
             --output report/stats_corrected_resampled_f1.csv \
             --metric f1 --train-fraction 0.8
+      - name: Print generated corrected CSV for archival
+        run: cat report/stats_corrected_resampled_f1.csv
       - uses: actions/upload-artifact@v4
         with:
           name: historical-corrected-resampled-f1
