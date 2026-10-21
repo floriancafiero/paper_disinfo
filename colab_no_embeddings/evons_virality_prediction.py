@@ -30,6 +30,7 @@ from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, tra
 import sys
 sys.path.insert(0, str(Path.cwd() / 'tools'))
 from imbalanced_evaluation import evaluate_with_calibration
+from source_engagement_features import source_engagement_features
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 
 warnings.filterwarnings('ignore')
@@ -72,17 +73,9 @@ def load_virality_data(csv_path: Path):
 
 
 def compute_avg_eng_per_source(source_tr, fb_eng_tr, source_va):
-    """Compute per-source mean engagement on train split, then map to train and val indices.
-    Sources unseen in train fall back to the global train mean."""
-    src_to_avg = {}
-    for s in np.unique(source_tr):
-        mask = source_tr == s
-        src_to_avg[s] = fb_eng_tr[mask].mean()
-    global_avg = fb_eng_tr.mean()
-    avg_tr = np.array([src_to_avg[s] for s in source_tr], dtype=np.float32)
-    avg_va = np.array([src_to_avg.get(s, global_avg) for s in source_va], dtype=np.float32)
-    mu, sigma = avg_tr.mean(), avg_tr.std() + 1e-6
-    return (avg_tr - mu) / sigma, (avg_va - mu) / sigma
+    """Use leave-one-out fit means and fit-only means for held-out rows."""
+    return source_engagement_features(source_tr, fb_eng_tr, source_va)
+
 
 
 def load_embeddings(data_dir: Path, mode='bert'):
