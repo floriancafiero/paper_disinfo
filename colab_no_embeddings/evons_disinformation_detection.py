@@ -191,7 +191,7 @@ def run_baselines(title_emb, desc_emb, y, n_splits=10):
     rows = []
     for name, model in models.items():
         for fold, (tr, va) in enumerate(skf.split(X, y), 1):
-        fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr], random_state=1000 + fold)
+            fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr], random_state=1000 + fold)
             model.fit(X[fit], y[fit])
             def predict_prob(features):
                 if hasattr(model, 'predict_proba'):
