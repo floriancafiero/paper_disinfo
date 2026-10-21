@@ -118,8 +118,17 @@ def train():
 def make_archive():
     OUT.mkdir(exist_ok=True)
     archive = OUT / "SHARE_AGGREGATES_ONLY.zip"
-    files = [p for p in OUT.glob("*") if p.is_file() and p.suffix in {".csv", ".json"}
-             and p.name != archive.name]
+    # Explicit allowlist: do not accidentally package arbitrary datasets or
+    # user-created CSV/JSON files that happen to be in revision_results/.
+    allowed = {"preflight_manifest.json", "dataset_audit.json"}
+    for label in ("fake", "real"):
+        allowed.update({
+            f"future_{label}.csv", f"future_{label}_summary.json",
+            f"future_{label}_eligible.csv", f"future_{label}_eligible_summary.json",
+            f"thresholds_{label}.csv", f"legacy_total_{label}.csv",
+            f"legacy_total_{label}_summary.json",
+        })
+    files = [OUT / name for name in sorted(allowed) if (OUT / name).is_file()]
     # Scan generated summary files only; do not send full notebooks or tensors.
     outputs = ROOT / "colab_no_embeddings/outputs"
     files.extend(p for p in outputs.rglob("*") if p.is_file() and
