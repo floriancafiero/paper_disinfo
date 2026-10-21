@@ -44,7 +44,7 @@ def run(dataset="both", quantiles=Q_VALUES):
             previous = os.environ.get("VIRALITY_QUANTILE")
             os.environ["VIRALITY_QUANTILE"] = str(q)
             try:
-                executed = NotebookClient(
+                NotebookClient(
                     nb, timeout=7200, kernel_name="python3",
                     resources={"metadata": {"path": str(ROOT)}}
                 ).execute()
@@ -53,9 +53,11 @@ def run(dataset="both", quantiles=Q_VALUES):
                     os.environ.pop("VIRALITY_QUANTILE", None)
                 else:
                     os.environ["VIRALITY_QUANTILE"] = previous
+            # Metrics are already saved by the notebook to CSV.
+            # Do not persist executed cells, outputs, or raw tweet text.
             target = ROOT / "colab_no_embeddings/outputs" / f"fakenewsnet_virality_q{label}"
-            target.mkdir(parents=True, exist_ok=True)
-            nbformat.write(executed, target / "executed_notebook.ipynb")
+            if not target.is_dir():
+                raise RuntimeError(f"Missing expected output directory: {target}")
 
 
 def main():
