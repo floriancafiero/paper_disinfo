@@ -26,7 +26,10 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, train_test_split
+import sys
+sys.path.insert(0, str(Path.cwd() / 'tools'))
+from imbalanced_evaluation import evaluate_with_calibration
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 
 warnings.filterwarnings('ignore')
@@ -174,12 +177,19 @@ def run_cv(title_emb, desc_emb, y, source, fb_eng, model_name, n_splits=10, epoc
 
     rows = []
     for fold, (tr, va) in enumerate(skf.split(X_concat.numpy(), y), 1):
-        # Compute per-source avg engagement from training data only (no leakage)
-        avg_eng_tr, avg_eng_va = compute_avg_eng_per_source(source[tr], fb_eng[tr], source[va])
-
-        ds_tr = MultiInputDataset(title_emb[tr], desc_emb[tr], source[tr], avg_eng_tr, y[tr])
+        # Three disjoint sets per outer split: fit, threshold calibration, test.
+        # Unlike post-hoc tuning on va, this cannot optimize test-fold F1.
+        fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr],
+                                    random_state=1000 + fold)
+        avg_eng_fit, avg_eng_cal = compute_avg_eng_per_source(
+            source[fit], fb_eng[fit], source[cal])
+        _, avg_eng_va = compute_avg_eng_per_source(
+            source[fit], fb_eng[fit], source[va])
+        ds_tr = MultiInputDataset(title_emb[fit], desc_emb[fit], source[fit], avg_eng_fit, y[fit])
+        ds_cal = MultiInputDataset(title_emb[cal], desc_emb[cal], source[cal], avg_eng_cal, y[cal])
         ds_va = MultiInputDataset(title_emb[va], desc_emb[va], source[va], avg_eng_va, y[va])
         dl_tr = DataLoader(ds_tr, batch_size=batch_size, shuffle=True)
+        dl_cal = DataLoader(ds_cal, batch_size=batch_size, shuffle=False)
         dl_va = DataLoader(ds_va, batch_size=batch_size, shuffle=False)
 
         if model_name == 'mlp_text':
@@ -214,23 +224,29 @@ def run_cv(title_emb, desc_emb, y, source, fb_eng, model_name, n_splits=10, epoc
                 opt.step()
 
         model.eval()
-        probs = []
-        with torch.no_grad():
-            for t, d, src, avg, _ in dl_va:
-                t, d, src, avg = t.to(device), d.to(device), src.to(device), avg.to(device)
-                if model_name == 'mlp_text':
-                    p = torch.sigmoid(model(torch.cat([t, d], dim=1)))
-                elif model_name == 'mlp_source':
-                    p = torch.sigmoid(model(torch.cat([t, d], dim=1), src))
-                elif model_name == 'mlp_avg_eng':
-                    p = torch.sigmoid(model(torch.cat([t, d], dim=1), avg))
-                else:
-                    p = torch.sigmoid(model(t, d, avg))
-                probs.append(p.cpu().numpy())
-        probs = np.concatenate(probs)
-        m = compute_metrics(y[va], probs)
+        def predict_prob(loader):
+            outputs = []
+            with torch.no_grad():
+                for t, d, src, avg, _ in loader:
+                    t, d, src, avg = t.to(device), d.to(device), src.to(device), avg.to(device)
+                    if model_name == 'mlp_text':
+                        p = torch.sigmoid(model(torch.cat([t, d], dim=1)))
+                    elif model_name == 'mlp_source':
+                        p = torch.sigmoid(model(torch.cat([t, d], dim=1), src))
+                    elif model_name == 'mlp_avg_eng':
+                        p = torch.sigmoid(model(torch.cat([t, d], dim=1), avg))
+                    else:
+                        p = torch.sigmoid(model(t, d, avg))
+                    outputs.append(p.cpu().numpy())
+            return np.concatenate(outputs)
+
+        probs_cal = predict_prob(dl_cal)
+        probs_test = predict_prob(dl_va)
+        m = evaluate_with_calibration(y[va], probs_test, y[cal], probs_cal)
         m['model'] = model_name
         m['fold'] = fold
+        m['n_fit'] = len(fit)
+        m['n_calibration'] = len(cal)
         rows.append(m)
 
     return pd.DataFrame(rows)
@@ -255,7 +271,7 @@ res.append(run_cv(bert_t, bert_d, y, source, fb_eng, model_name='gating').assign
 res.append(run_cv(mis_t, mis_d, y, source, fb_eng, model_name='gating').assign(model='gating_mistral'))
 
 all_results = pd.concat(res, ignore_index=True)
-summary = all_results.groupby('model')[['accuracy', 'f1', 'precision', 'recall', 'auc']].mean().sort_values('f1', ascending=False)
+summary = all_results.groupby('model')[['accuracy', 'f1', 'precision', 'recall', 'auc', 'pr_auc', 'pr_baseline', 'majority_accuracy', 'majority_f1', 'f1_tuned', 'precision_tuned', 'recall_tuned', 'threshold_tuned']].mean().sort_values('f1_tuned', ascending=False)
 summary
 
 
@@ -275,7 +291,7 @@ PUB_SUMMARY_FILENAME = 'evons_virality_publication_summary.md'
 # Build a publication-ready markdown synthesis from summary dataframe
 summary_for_pub = summary.copy()
 summary_for_pub = summary_for_pub.reset_index()
-summary_for_pub[['accuracy', 'f1', 'precision', 'recall', 'auc']] = summary_for_pub[['accuracy', 'f1', 'precision', 'recall', 'auc']].round(4)
+summary_for_pub = summary_for_pub.round(4)
 
 top_model = summary_for_pub.iloc[0]
 md_lines = [
