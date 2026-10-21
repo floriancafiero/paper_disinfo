@@ -24,6 +24,14 @@ def holm(pvalues):
     return result
 
 
+def cliffs_delta(a, b):
+    """Descriptive Cliff's delta; fold groups are NOT independent."""
+    n = len(a) * len(b)
+    if not n:
+        return float("nan")
+    return sum((x > y) - (x < y) for x in a for y in b) / n
+
+
 def corrected_pair(a, b, train_fraction=.8):
     """Return mean, corrected SE, df and two-sided p; paired repeated holdout."""
     if len(a) != len(b) or len(a) < 3:
@@ -48,7 +56,9 @@ def corrected_pair(a, b, train_fraction=.8):
     return {"mean_diff": estimate, "corrected_se": se, "df": n - 1,
             "p_value_corrected": p, "ci_low_corrected": ci[0],
             "ci_high_corrected": ci[1], "correction_factor": factor,
-            "n_paired_splits": n}
+            "n_paired_splits": n,
+            "paired_standardized_difference": estimate / stdev(d) if stdev(d) else float("nan"),
+            "cliffs_delta_descriptive": cliffs_delta(a, b)}
 
 
 def analyze(rows, train_fraction=.8, metric="f1"):
