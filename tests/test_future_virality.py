@@ -28,6 +28,8 @@ class FutureViralityTests(unittest.TestCase):
         self.assertEqual(coverage["n_with_future_posts_after_k"], {"1": 4, "2": 4})
         self.assertEqual(rows[0]["threshold_future_likes"], 25)
         self.assertEqual(rows[0]["n_positive"], 2)
+        self.assertIn("auc_prefix_for_total_label_matched_cohort", rows[0])
+        self.assertAlmostEqual(rows[0]["auc_prefix_for_total_label_matched_cohort"], 1.)
         self.assertAlmostEqual(rows[0]["auc_prefix_for_future_label"], 1.)
         self.assertEqual(rows[1]["threshold_future_likes"], 0)
         self.assertEqual(rows[1]["n_positive"], 0)
