@@ -56,9 +56,29 @@ and have **not** been replaced.
 python -m unittest discover -s tests -p 'test_imbalanced_evaluation.py' -v
 ```
 
-## Outstanding scope
+## Expanded coverage (follow-up commit)
 
-The shared helper can be reused in EVONS disinformation detection and
-FakeNewsNet tasks, but their training scripts have **not** yet been
-retrofitted with independent calibration subsets. No new numerical
-results should be asserted for those tasks until re-training.
+The same calibration protocol has now been integrated into the EVONS
+**disinformation** standalone Python script and notebook and both
+FakeNewsNet **disinformation** and **virality** notebooks. All four
+notebooks use the same shared metric helper. The EVONS virality notebook
+is synchronized with its revised Python script.
+
+The EVONS virality training source-engagement feature now uses a
+**leave-one-out** per-source engagement mean for model-fit items, avoiding
+the direct inclusion of an article's own engagement in its own feature.
+Calibration and test items use *fit-only* source means. Note that the
+training-feature standardization still uses statistics of the whole fit set;
+this is not sample-wise independent normalization. The source-level mean
+may also proxy editorial characteristics; group-split evaluation remains
+needed to characterize source confounding.
+
+No output CSV or published result is automatically replaced: all four
+models suites must be rerun with original corpus/embeddings. Raw data and
+embeddings remain outside GitHub. Historical results were generated under
+a different training regime and **must not** be compared unqualified to
+these new results.
+
+Validation includes source-feature unit tests and AST syntax checks of
+all modified Python scripts and code cells of all four notebooks. These
+checks do not constitute a real-data training run.
