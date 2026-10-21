@@ -24,6 +24,7 @@ class NotebookSyntaxTests(unittest.TestCase):
             with self.subTest(file=file.name):
                 ast.parse(file.read_text(encoding="utf-8"), filename=str(file))
 
+    # Keep notebook and standalone scripts importable at the syntax level in CI.
     def test_all_code_cells_compile(self):
         for file in NOTEBOOKS:
             notebook = json.loads(file.read_text(encoding="utf-8"))
