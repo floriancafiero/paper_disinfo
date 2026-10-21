@@ -29,7 +29,7 @@ def cliffs_delta(a, b):
     n = len(a) * len(b)
     if not n:
         return float("nan")
-    return sum((x > y) - (x < y) for x in a for y in b) / n
+    return sum(int(x > y) - int(x < y) for x in a for y in b) / n
 
 
 def corrected_pair(a, b, train_fraction=.8):
