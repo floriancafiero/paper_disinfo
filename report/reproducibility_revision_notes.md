@@ -9,7 +9,7 @@ computed and checked against the actual article revision.
 | Dataset | Input used by deployed text pipelines | Encoder(s) | Pooling |
 |---|---|---|---|
 | EVONS | News title and description (encoded separately) | `FacebookAI/roberta-base` or Mistral API `mistral-embed` | RoBERTa first-token final hidden state; title and description vectors concatenated for MLP; gating blends them with a learned gate |
-| FakeNewsNet PolitiFact | Text of each recovered propagation tweet | `FacebookAI/roberta-base` or Mistral API `mistral-embed` | Per-tweet embedding first; news-level text classifier receives mean of **all** recovered tweet embeddings |
+| FakeNewsNet PolitiFact | Text of recovered propagation tweets | `FacebookAI/roberta-base` or Mistral API `mistral-embed` | Revised prefix runs: mean of first k=1,3,5,10 tweet embeddings; separate `full` retrospective benchmark averages all tweets |
 
 The Mistral API model string is precisely `mistral-embed` (rather than a
 chat/instruction model). Embedding scripts use batches of 256 for Mistral;
@@ -17,12 +17,16 @@ the FakeNewsNet RoBERTa preprocessing script defaults to batch size 32.
 The classifiers expect 768-dimensional RoBERTa features or 1024-dimensional
 Mistral features, subject to checking actual stored tensor shapes.
 
-**Crucial:** The FakeNewsNet mean embedding uses the **entire** recovered
-propagation sequence, rather than a prefix available at first posting.
-Therefore the full-sequence classifier experiment should not be advertised
-as deployable **early virality prediction**. The separate first-k-tweet
-audits do measure an early observational signal. This distinction matters
-for Fig. 2 and the comparison with EVONS article-level content.
+The historical FakeNewsNet classifiers used the **entire** recovered
+propagation and must not be advertised as early prediction. Revised
+classifiers use text-only prefixes k=1,3,5,10 and a separate retrospective
+`full` benchmark, on the same >=11-recovered-tweet cohort and reused
+60/20/20 splits. Virality still targets total engagement including the
+prefix; future engagement remains a separate descriptive audit. No likes
+are classifier inputs. Cohort selection uses final recovered length and
+limits generalization to arbitrary early stories. Confirm cached embedding
+identity/order; structural checks alone cannot establish provenance.
+See `tools/README_fakenewsnet_prefix.md`. New scores require real-data reruns.
 
 ## Models and evaluation
 

@@ -8,10 +8,14 @@ import csv
 import json
 import math
 import statistics
+import sys
 from pathlib import Path
 
 QUANTILES = (0.50, 0.75, 0.90, 0.95)
 PREFIXES = (1, 3, 5, 10)
+
+# EVONS has text fields longer than the csv module default (131072 chars).
+csv.field_size_limit(sys.maxsize)
 
 
 def quantile(values, q):

@@ -103,6 +103,18 @@ Ce mode recalcule les deux tâches de détection et la grille complète
 q50, q75, q90, q95 des tâches de viralité. Il ne recalcule pas les
 embeddings et n'appellera pas l'API Mistral.
 
+Pour FakeNewsNet, chaque tâche entraîne les fenêtres textuelles
+**1, 3, 5, 10 tweets récupérés**, plus `full` (comparaison rétrospective),
+sur la même cohorte d'au moins 11 tweets. Cela multiplie environ par cinq
+le travail FakeNewsNet. Pour limiter les fenêtres :
+`python tools/colleague_revision_run.py --stage train --fnn-windows 1,10,full`.
+Le target de viralité reste l'engagement total ; les likes ne sont pas des
+features. Les résultats vont dans `fakenewsnet_disinformation_prefix` et
+`fakenewsnet_virality_prefix_q50` (etc.). Voir
+[le protocole des préfixes](README_fakenewsnet_prefix.md).
+Le contrôle de chargement refuse désormais toute différence de nombre
+d'articles/tweets entre JSONL et embeddings : aucune troncature silencieuse.
+
 Les scores sortent dans `colab_no_embeddings/outputs/`. Le lanceur
 crée une archive partageable des **CSV agrégés**. Prévoir
 plusieurs heures selon le GPU, la taille des données et l'activation

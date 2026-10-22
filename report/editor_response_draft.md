@@ -82,11 +82,17 @@ selection criteria [TBD].
 
 The Mistral embeddings are obtained using the API model identifier
 `mistral-embed`; RoBERTa is `FacebookAI/roberta-base`.
-EVONS text representations are based on title/description embeddings,
-whereas FakeNewsNet first embeds each tweet and then averages tweet
-embeddings over the recovered propagation. In particular, **the
-full-propagation FakeNewsNet classifier has access to late text and
-should not be interpreted as an early predictor**. A code-grounded
+EVONS text representations are based on title/description embeddings.
+The revised FakeNewsNet classifiers average only the first k=1,3,5,10
+recovered tweet embeddings, on a fixed cohort with at least 11 recovered
+tweets and identical splits across windows and encoders. A separate `full`
+benchmark retains all text and is explicitly retrospective. The trained
+virality target remains total engagement; future engagement is assessed
+in the separate descriptive audit. No engagement values are input features.
+Selection on final recovered length limits the population represented by
+these early-text experiments. Cached embedding identity/order still needs
+data-owner confirmation. **Prefix classifier results and coverage [TBD].**
+A code-grounded
 description of model architecture, batching, hidden units, optimizer,
 dropout, epoch counts and evaluation partitions is now included in
 `report/reproducibility_revision_notes.md`.

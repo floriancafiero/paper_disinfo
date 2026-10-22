@@ -23,6 +23,8 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from fakenewsnet_prefix import DEFAULT_WINDOWS, validate_windows
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "revision_results"
 EVONS = ROOT / "evons/data"
@@ -93,25 +95,35 @@ def audit():
              "--summary-out", OUT / f"legacy_total_{label}_summary.json"])
 
 
-def execute_notebook(path, label):
+def execute_notebook(path, label, fnn_windows=DEFAULT_WINDOWS):
     from nbclient import NotebookClient
     import nbformat
     nb = nbformat.read(str(ROOT / path), as_version=4)
     print(f"Starting {label}; this can take hours", flush=True)
     # Avoid saving executed notebooks; they can contain raw text in outputs.
-    NotebookClient(nb, timeout=7200, kernel_name="python3",
-                   resources={"metadata": {"path": str(ROOT)}}).execute()
+    validate_windows(fnn_windows)
+    previous = os.environ.get("FNN_WINDOWS")
+    os.environ["FNN_WINDOWS"] = fnn_windows
+    try:
+        NotebookClient(nb, timeout=7200, kernel_name="python3",
+                       resources={"metadata": {"path": str(ROOT)}}).execute()
+    finally:
+        if previous is None:
+            os.environ.pop("FNN_WINDOWS", None)
+        else:
+            os.environ["FNN_WINDOWS"] = previous
     print(f"Finished {label}", flush=True)
 
 
-def train():
+def train(fnn_windows=DEFAULT_WINDOWS):
     OUT.mkdir(exist_ok=True)
     # All tasks require the local protected data and precomputed embeddings.
     run([sys.executable, "colab_no_embeddings/evons_disinformation_detection.py"])
     execute_notebook("colab_no_embeddings/fakenewsnet_disinformation_detection.ipynb",
-                     "FakeNewsNet disinformation")
+                     "FakeNewsNet disinformation", fnn_windows)
     run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "evons"])
-    run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "fakenewsnet"])
+    run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "fakenewsnet",
+         "--fnn-windows", fnn_windows])
     print("All training completed", flush=True)
 
 
@@ -141,7 +153,10 @@ def make_archive():
                      "fakenewsnet_disinformation_merged_summary.csv",
                      "fakenewsnet_virality_merged_cv_results.csv",
                      "fakenewsnet_virality_merged_summary.csv",
-                 })
+                 } and (not p.name.startswith("fakenewsnet_") or
+                        p.parent.name == "fakenewsnet_disinformation_prefix" or
+                        p.parent.name in {"fakenewsnet_virality_prefix_q" + str(round(float(q) * 100))
+                                          for q in QUANTILES}))
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
         for p in sorted(set(files)):
             z.write(p, p.relative_to(ROOT))
@@ -152,7 +167,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--stage", choices=("check", "audit", "train", "all", "pack"),
                         default="check")
+    parser.add_argument("--fnn-windows", default=DEFAULT_WINDOWS,
+                        help="FakeNewsNet windows: 1,3,5,10,full (fixed >=11-tweet cohort)")
     args = parser.parse_args()
+    validate_windows(args.fnn_windows)
     try:
         present = check()
         audit_inputs = [REQUIRED["EVONS"][0], *REQUIRED["FakeNewsNet"][:2]]
@@ -163,7 +181,7 @@ def main():
         if args.stage in ("audit", "all"):
             audit()
         if args.stage in ("train", "all"):
-            train()
+            train(args.fnn_windows)
         if args.stage in ("audit", "train", "all", "pack"):
             make_archive()
     except Exception:

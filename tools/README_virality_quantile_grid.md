@@ -9,6 +9,12 @@ definition, with actual positive rates potentially below 1-q because of
 tied engagement values. Results are written into separate dataset/q
 directories to prevent overwriting the original reports.
 
+FakeNewsNet now evaluates text prefixes k=1,3,5,10 plus a retrospective
+`full` benchmark, all on one >=11-recovered-tweet cohort. See
+[the prefix protocol](README_fakenewsnet_prefix.md). Configure the windows
+with `--fnn-windows 1,3,5,10,full`; outputs use
+`fakenewsnet_virality_prefix_q{q}` directories. EVONS is unchanged.
+
 After obtaining the EVONS CSV, PolitiFact ordered propagations, and
 their respective precomputed embeddings:
 
@@ -36,9 +42,10 @@ plus correct tensor paths. No encoder/API calls are made.
 - Before publishing, report per-q **actual cutoff value, number of
   positives, actual positive rate, AP, calibrated F1 and majority-class
   baseline**, plus the population used in each experiment.
-- The available FakeNewsNet text pipeline pools **all** recovered tweet
-  embeddings: this is a full-propagation text benchmark, not an early
-  real-world deployable predictor.
+- FakeNewsNet prefix classifiers use only their first k tweet embeddings;
+  the `full` window uses all recovered text and is retrospective. No likes
+  are input features. The selected cohort requires >=11 recovered tweets,
+  so it does not represent all stories available at prediction time.
 - Older FakeNewsNet sensitivity CSVs used `>=`; regenerated ones now
   use the classifiers' strict `>`, so archived files must not be
   silently presented as newly harmonized results.

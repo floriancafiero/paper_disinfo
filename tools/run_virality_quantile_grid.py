@@ -9,6 +9,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from fakenewsnet_prefix import DEFAULT_WINDOWS, validate_windows
+
 
 ROOT = Path(__file__).resolve().parents[1]
 Q_VALUES = (0.5, 0.75, 0.9, 0.95)
@@ -23,7 +25,8 @@ def validate_quantiles(values):
     return quantiles
 
 
-def run(dataset="both", quantiles=Q_VALUES):
+def run(dataset="both", quantiles=Q_VALUES, fnn_windows=DEFAULT_WINDOWS):
+    validate_windows(fnn_windows)
     for q in quantiles:
         env = dict(os.environ, VIRALITY_QUANTILE=str(q))
         label = str(round(q * 100))
@@ -41,31 +44,36 @@ def run(dataset="both", quantiles=Q_VALUES):
             from nbclient import NotebookClient
             source = ROOT / "colab_no_embeddings/fakenewsnet_virality_prediction.ipynb"
             nb = nbformat.read(source, as_version=4)
-            previous = os.environ.get("VIRALITY_QUANTILE")
-            os.environ["VIRALITY_QUANTILE"] = str(q)
+            settings = {"VIRALITY_QUANTILE": str(q), "FNN_WINDOWS": fnn_windows}
+            previous = {key: os.environ.get(key) for key in settings}
+            os.environ.update(settings)
             try:
                 NotebookClient(
                     nb, timeout=7200, kernel_name="python3",
                     resources={"metadata": {"path": str(ROOT)}}
                 ).execute()
             finally:
-                if previous is None:
-                    os.environ.pop("VIRALITY_QUANTILE", None)
-                else:
-                    os.environ["VIRALITY_QUANTILE"] = previous
+                for key, value in previous.items():
+                    if value is None:
+                        os.environ.pop(key, None)
+                    else:
+                        os.environ[key] = value
             # Metrics are already saved by the notebook to CSV.
             # Do not persist executed cells, outputs, or raw tweet text.
-            target = ROOT / "colab_no_embeddings/outputs" / f"fakenewsnet_virality_q{label}"
-            if not target.is_dir():
-                raise RuntimeError(f"Missing expected output directory: {target}")
+            target = ROOT / "colab_no_embeddings/outputs" / f"fakenewsnet_virality_prefix_q{label}"
+            for name in ("fakenewsnet_virality_merged_cv_results.csv", "fakenewsnet_virality_merged_summary.csv"):
+                if not (target / name).is_file():
+                    raise RuntimeError(f"Missing expected output: {target / name}")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", choices=("evons", "fakenewsnet", "both"), default="both")
     parser.add_argument("--quantiles", default="0.5,0.75,0.9,0.95")
+    parser.add_argument("--fnn-windows", default=DEFAULT_WINDOWS,
+                        help="FakeNewsNet text windows selected from 1,3,5,10,full; cohort always >=11 tweets")
     args = parser.parse_args()
-    run(args.dataset, validate_quantiles(args.quantiles))
+    run(args.dataset, validate_quantiles(args.quantiles), args.fnn_windows)
 
 
 if __name__ == "__main__":

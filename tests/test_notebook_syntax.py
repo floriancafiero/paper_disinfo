@@ -10,6 +10,7 @@ SCRIPTS = [
     ROOT / "colab_no_embeddings" / "evons_virality_prediction.py",
     ROOT / "tools" / "colleague_revision_run.py",
     ROOT / "tools" / "run_virality_quantile_grid.py",
+    ROOT / "tools" / "fakenewsnet_prefix.py",
 ]
 NOTEBOOKS = [
     ROOT / "colab_no_embeddings" / f"{task}.ipynb"
