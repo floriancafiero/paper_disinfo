@@ -1,0 +1,52 @@
+% Revised 60/20/20 experiment; average metrics over 10 OVERLAPPING stratified holdouts.
+% Best model is chosen post-hoc by mean calibrated F1 at each quantile/window.
+\begin{table}[ht]
+\centering
+\small
+\caption{EVONS virality: best classifier at each engagement quantile. AP is average precision.}
+\label{tab:evons-revised}
+\begin{tabular}{rlrrrr}
+\toprule
+Percentile & Model & F1 (cal.) & AP & ROC-AUC & Positive rate \\
+\midrule
+50 & mlp\_source & 0.859 & 0.924 & 0.931 & 0.500 \\
+75 & gating\_mistral & 0.666 & 0.726 & 0.889 & 0.250 \\
+90 & gating\_mistral & 0.495 & 0.497 & 0.880 & 0.100 \\
+95 & gating\_mistral & 0.378 & 0.345 & 0.876 & 0.050 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[ht]
+\centering
+\small
+\caption{FakeNewsNet--PolitiFact: best calibrated F1 by textual observation window on a fixed 434-story cohort.}
+\label{tab:fnn-revised}
+\begin{tabular}{rrlrrrr}
+\toprule
+Percentile & Window & Best model & F1 (cal.) & AP & ROC-AUC & Positives \\
+\midrule
+50 & k1 & mlp\_mistral & 0.674 & 0.715 & 0.690 & 217 \\
+50 & k3 & logreg\_mistral & 0.682 & 0.715 & 0.704 & 217 \\
+50 & k5 & logreg\_mistral & 0.678 & 0.708 & 0.703 & 217 \\
+50 & k10 & mlp\_bert & 0.676 & 0.724 & 0.700 & 217 \\
+50 & full & logreg\_mistral & 0.735 & 0.804 & 0.802 & 217 \\
+75 & k1 & logreg\_mistral & 0.557 & 0.618 & 0.787 & 109 \\
+75 & k3 & logreg\_mistral & 0.617 & 0.658 & 0.808 & 109 \\
+75 & k5 & mlp\_bert & 0.615 & 0.641 & 0.805 & 109 \\
+75 & k10 & mlp\_bert & 0.599 & 0.634 & 0.812 & 109 \\
+75 & full & rf\_mistral & 0.764 & 0.819 & 0.892 & 109 \\
+90 & k1 & logreg\_mistral & 0.464 & 0.516 & 0.808 & 44 \\
+90 & k3 & logreg\_mistral & 0.609 & 0.543 & 0.839 & 44 \\
+90 & k5 & logreg\_mistral & 0.613 & 0.561 & 0.836 & 44 \\
+90 & k10 & mlp\_bert & 0.554 & 0.609 & 0.876 & 44 \\
+90 & full & rf\_bert & 0.615 & 0.666 & 0.907 & 44 \\
+95 & k1 & mlp\_bert & 0.261 & 0.368 & 0.806 & 22 \\
+95 & k3 & mlp\_bert & 0.428 & 0.395 & 0.817 & 22 \\
+95 & k5 & mlp\_bert & 0.390 & 0.381 & 0.854 & 22 \\
+95 & k10 & logreg\_mistral & 0.382 & 0.433 & 0.883 & 22 \\
+95 & full & rf\_mistral & 0.574 & 0.664 & 0.963 & 22 \\
+\bottomrule
+\end{tabular}
+\end{table}
+% Caution: source-associated EVONS veracity labels, FNN fixed-length selection,
+% observational labels and small n at q95. Do not interpret model ranking as significance.
