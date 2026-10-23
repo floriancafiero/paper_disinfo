@@ -1,0 +1,35 @@
+name: revised-cv-inference
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/revised_cv_inference.py'
+      - 'tests/test_revised_cv_inference.py'
+      - '.github/workflows/revised-cv-inference.yml'
+
+jobs:
+  inference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install inference dependencies
+        run: python -m pip install numpy scipy
+      - name: Validate new paired CV inference
+        run: python -m unittest discover -s tests -p test_revised_cv_inference.py -v
+      - name: Compute corrected revised comparisons
+        run: |
+          python tools/revised_cv_inference.py
+          echo "--- INTEGRITY ---"
+          cat report/revised_inference/integrity.json
+          echo "--- NEW MODEL PAIRS ---"
+          cat report/revised_inference/f1_tuned_model_pairs.csv
+          echo "--- PREFIX VS FULL ---"
+          cat report/revised_inference/f1_tuned_prefix_vs_full.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: revised-inference
+          path: report/revised_inference/
