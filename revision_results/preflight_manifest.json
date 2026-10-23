@@ -1,0 +1,55 @@
+{
+  "checked_at_utc": "2026-10-22T12:58:37.751473+00:00",
+  "python": "3.12.15",
+  "platform": "Linux-6.8.0-146-generic-x86_64-with-glibc2.39",
+  "data_inventory": {
+    "EVONS": {
+      "evons/data/evons.csv": {
+        "present": true,
+        "size_bytes": 1230393226
+      },
+      "evons/data/title_embeddings.pt": {
+        "present": true,
+        "size_bytes": 285601948
+      },
+      "evons/data/desc_embeddings.pt": {
+        "present": true,
+        "size_bytes": 285601948
+      },
+      "evons/data/title_embeddings_mistral.pt": {
+        "present": true,
+        "size_bytes": 380802204
+      },
+      "evons/data/desc_embeddings_mistral.pt": {
+        "present": true,
+        "size_bytes": 380802204
+      }
+    },
+    "FakeNewsNet": {
+      "FakeNewsNet/data/ordered_fake_propagation_paths.jsonl": {
+        "present": true,
+        "size_bytes": 26725618
+      },
+      "FakeNewsNet/data/ordered_real_propagation_paths.jsonl": {
+        "present": true,
+        "size_bytes": 124451593
+      },
+      "FakeNewsNet/data/fake_news_net/ordered_fake_propagation_paths_emb.pt": {
+        "present": true,
+        "size_bytes": 232746810
+      },
+      "FakeNewsNet/data/fake_news_net/ordered_real_propagation_paths_emb.pt": {
+        "present": true,
+        "size_bytes": 1109318392
+      },
+      "FakeNewsNet/data/fake_news_net/ordered_fake_propagation_paths_emb_mistral.pt": {
+        "present": true,
+        "size_bytes": 290195036
+      },
+      "FakeNewsNet/data/fake_news_net/ordered_real_propagation_paths_emb_mistral.pt": {
+        "present": true,
+        "size_bytes": 1382443612
+      }
+    }
+  }
+}

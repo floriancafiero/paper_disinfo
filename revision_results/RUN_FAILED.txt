@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 184, in main
+    train(args.fnn_windows)
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 121, in train
+    run([sys.executable, "colab_no_embeddings/evons_disinformation_detection.py"])
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 51, in run
+    subprocess.run(list(map(str, command)), check=True, cwd=ROOT, env=env)
+  File "/venv/main/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/venv/main/bin/python', 'colab_no_embeddings/evons_disinformation_detection.py']' returned non-zero exit status 1.

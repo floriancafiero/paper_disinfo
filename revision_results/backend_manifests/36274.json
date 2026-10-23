@@ -1,0 +1,52 @@
+{
+  "python": "3.12.15 (main, Oct 13 2026, 16:52:04) [GCC 15.3.0]",
+  "executable": "/venv/paper_disinfo/bin/python",
+  "versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1",
+    "cuml-cu13": "26.10.0",
+    "cupy-cuda13x": "14.2.0"
+  },
+  "backend": "gpu",
+  "pid": 36274,
+  "created_at_utc": "2026-10-22T23:09:38.024713+00:00",
+  "models": {
+    "logreg": {
+      "verbose": false,
+      "output_type": "numpy",
+      "penalty": "l2",
+      "tol": 0.0001,
+      "C": 1.0,
+      "fit_intercept": true,
+      "class_weight": null,
+      "max_iter": 1000,
+      "linesearch_max_iter": 50,
+      "l1_ratio": null,
+      "solver": "qn",
+      "lbfgs_memory": 5,
+      "penalty_normalized": true
+    },
+    "rf": {
+      "verbose": false,
+      "output_type": "numpy",
+      "split_criterion": "gini",
+      "n_estimators": 250,
+      "bootstrap": true,
+      "max_samples": 1.0,
+      "max_depth": null,
+      "max_leaves": -1,
+      "max_features": "sqrt",
+      "n_bins": 128,
+      "min_samples_leaf": 1,
+      "min_samples_split": 2,
+      "min_impurity_decrease": 0.0,
+      "max_batch_size": 4096,
+      "random_state": 42,
+      "n_streams": 4,
+      "oob_score": false,
+      "class_weight": null
+    }
+  }
+}

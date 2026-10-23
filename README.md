@@ -162,3 +162,9 @@ If you already have precomputed embeddings and only want to rerun training/evalu
 
 These runbooks now point to a **single consolidated notebook per task** (4 notebooks total: Evons/FakeNewsNet × disinformation/virality), and explicitly skip embedding regeneration scripts.
 
+
+## Backend GPU opzionale per le baseline
+
+RF e regressione logistica supportano `--baseline-backend cpu|gpu` nel runner di revisione.
+Per ambiente conda, kernel notebook, benchmark separato e compatibilità dei CSV, vedere
+[la guida del backend](tools/README_baseline_backend.md).

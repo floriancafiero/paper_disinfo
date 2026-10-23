@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fakenewsnet_prefix import DEFAULT_WINDOWS, validate_windows
+from baseline_backend import resolve_backend, backend_environment, require_gpu
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "revision_results"
@@ -95,7 +96,7 @@ def audit():
              "--summary-out", OUT / f"legacy_total_{label}_summary.json"])
 
 
-def execute_notebook(path, label, fnn_windows=DEFAULT_WINDOWS):
+def execute_notebook(path, label, fnn_windows=DEFAULT_WINDOWS, baseline_backend=None, kernel_name="python3"):
     from nbclient import NotebookClient
     import nbformat
     nb = nbformat.read(str(ROOT / path), as_version=4)
@@ -105,8 +106,9 @@ def execute_notebook(path, label, fnn_windows=DEFAULT_WINDOWS):
     previous = os.environ.get("FNN_WINDOWS")
     os.environ["FNN_WINDOWS"] = fnn_windows
     try:
-        NotebookClient(nb, timeout=7200, kernel_name="python3",
-                       resources={"metadata": {"path": str(ROOT)}}).execute()
+        with backend_environment(resolve_backend(baseline_backend)):
+            NotebookClient(nb, timeout=7200, kernel_name=kernel_name,
+                           resources={"metadata": {"path": str(ROOT)}}).execute()
     finally:
         if previous is None:
             os.environ.pop("FNN_WINDOWS", None)
@@ -115,15 +117,20 @@ def execute_notebook(path, label, fnn_windows=DEFAULT_WINDOWS):
     print(f"Finished {label}", flush=True)
 
 
-def train(fnn_windows=DEFAULT_WINDOWS):
+def train(fnn_windows=DEFAULT_WINDOWS, baseline_backend=None, kernel_name="python3"):
+    backend = resolve_backend(baseline_backend)
+    if backend == 'gpu':
+        require_gpu()
     OUT.mkdir(exist_ok=True)
-    # All tasks require the local protected data and precomputed embeddings.
-    run([sys.executable, "colab_no_embeddings/evons_disinformation_detection.py"])
-    execute_notebook("colab_no_embeddings/fakenewsnet_disinformation_detection.ipynb",
-                     "FakeNewsNet disinformation", fnn_windows)
-    run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "evons"])
-    run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "fakenewsnet",
-         "--fnn-windows", fnn_windows])
+    with backend_environment(backend):
+        run([sys.executable, "colab_no_embeddings/evons_disinformation_detection.py"])
+        execute_notebook("colab_no_embeddings/fakenewsnet_disinformation_detection.ipynb",
+                         "FakeNewsNet disinformation", fnn_windows,
+                         baseline_backend=backend, kernel_name=kernel_name)
+        options = ["--baseline-backend", backend, "--kernel-name", kernel_name]
+        run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "evons", *options])
+        run([sys.executable, "tools/run_virality_quantile_grid.py", "--dataset", "fakenewsnet",
+             *options, "--fnn-windows", fnn_windows])
     print("All training completed", flush=True)
 
 
@@ -169,6 +176,9 @@ def main():
                         default="check")
     parser.add_argument("--fnn-windows", default=DEFAULT_WINDOWS,
                         help="FakeNewsNet windows: 1,3,5,10,full (fixed >=11-tweet cohort)")
+    parser.add_argument("--baseline-backend", choices=("cpu", "gpu"),
+                        default=os.environ.get("BASELINE_BACKEND", "cpu"))
+    parser.add_argument("--kernel-name", default="python3")
     args = parser.parse_args()
     validate_windows(args.fnn_windows)
     try:
@@ -181,7 +191,7 @@ def main():
         if args.stage in ("audit", "all"):
             audit()
         if args.stage in ("train", "all"):
-            train(args.fnn_windows)
+            train(args.fnn_windows, args.baseline_backend, args.kernel_name)
         if args.stage in ("audit", "train", "all", "pack"):
             make_archive()
     except Exception:

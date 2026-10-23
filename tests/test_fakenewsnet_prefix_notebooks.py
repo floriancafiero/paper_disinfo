@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 from fakenewsnet_prefix import DEFAULT_WINDOWS, make_splits, prepare_features, split_fingerprint, validate_windows
 from imbalanced_evaluation import evaluate_with_calibration
+from baseline_backend import fit_evaluate, resolve_backend
 from test_fakenewsnet_prefix import fixture
 
 
@@ -52,8 +53,10 @@ class NotebookIntegrationTests(unittest.TestCase):
                               prepare_features=prepare_features, split_fingerprint=split_fingerprint,
                               make_splits=lambda y: make_splits(y, n_splits=2),
                               evaluate_with_calibration=evaluate_with_calibration, HAS_XGB=False,
-                              LogisticRegression=lambda **kw: LogisticRegression(max_iter=1000, n_jobs=1, random_state=42),
-                              RandomForestClassifier=lambda **kw: RandomForestClassifier(n_estimators=2, n_jobs=1, random_state=42))
+                              fit_evaluate=fit_evaluate, resolve_backend=resolve_backend,
+                              build_baselines=lambda **kw: {
+                                  'logreg': LogisticRegression(max_iter=1000, n_jobs=1, random_state=42),
+                                  'rf': RandomForestClassifier(n_estimators=2, n_jobs=1, random_state=42)})
                     for i in (2, 3):
                         exec(''.join(nb['cells'][i]['source']), ns)
                     original_mlp = ns['run_mlp_cv']

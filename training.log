@@ -1,0 +1,75 @@
+OK      evons/data/evons.csv
+OK      evons/data/title_embeddings.pt
+OK      evons/data/desc_embeddings.pt
+OK      evons/data/title_embeddings_mistral.pt
+OK      evons/data/desc_embeddings_mistral.pt
+OK      FakeNewsNet/data/ordered_fake_propagation_paths.jsonl
+OK      FakeNewsNet/data/ordered_real_propagation_paths.jsonl
+OK      FakeNewsNet/data/fake_news_net/ordered_fake_propagation_paths_emb.pt
+OK      FakeNewsNet/data/fake_news_net/ordered_real_propagation_paths_emb.pt
+OK      FakeNewsNet/data/fake_news_net/ordered_fake_propagation_paths_emb_mistral.pt
+OK      FakeNewsNet/data/fake_news_net/ordered_real_propagation_paths_emb_mistral.pt
+
+$ /venv/paper_disinfo/bin/python colab_no_embeddings/evons_disinformation_detection.py
+All required files found.
+XGBoost available: False
+Rows: 92969 | Positive rate: 0.4601
+
+=== Running MLP (bert) ===
+Fold 1/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 1/10:   8%|▊         | 1/12 [00:03<00:34,  3.16s/it]Fold 1/10:  17%|█▋        | 2/12 [00:06<00:30,  3.02s/it]Fold 1/10:  25%|██▌       | 3/12 [00:09<00:26,  2.98s/it]Fold 1/10:  33%|███▎      | 4/12 [00:11<00:23,  2.98s/it]Fold 1/10:  42%|████▏     | 5/12 [00:14<00:20,  2.95s/it]Fold 1/10:  50%|█████     | 6/12 [00:18<00:18,  3.01s/it]Fold 1/10:  58%|█████▊    | 7/12 [00:21<00:16,  3.21s/it]Fold 1/10:  67%|██████▋   | 8/12 [00:24<00:12,  3.20s/it]Fold 1/10:  75%|███████▌  | 9/12 [00:28<00:09,  3.21s/it]Fold 1/10:  83%|████████▎ | 10/12 [00:31<00:06,  3.20s/it]Fold 1/10:  92%|█████████▏| 11/12 [00:34<00:03,  3.20s/it]Fold 1/10: 100%|██████████| 12/12 [00:37<00:00,  3.17s/it]Fold 1/10: 100%|██████████| 12/12 [00:37<00:00,  3.13s/it]
+Fold 2/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 2/10:   8%|▊         | 1/12 [00:03<00:43,  4.00s/it]Fold 2/10:  17%|█▋        | 2/12 [00:07<00:35,  3.51s/it]Fold 2/10:  25%|██▌       | 3/12 [00:11<00:36,  4.05s/it]Fold 2/10:  33%|███▎      | 4/12 [00:22<00:54,  6.84s/it]Fold 2/10:  42%|████▏     | 5/12 [00:33<00:58,  8.34s/it]Fold 2/10:  50%|█████     | 6/12 [00:44<00:55,  9.21s/it]Fold 2/10:  58%|█████▊    | 7/12 [00:54<00:47,  9.45s/it]Fold 2/10:  67%|██████▋   | 8/12 [01:03<00:36,  9.05s/it]Fold 2/10:  75%|███████▌  | 9/12 [01:12<00:27,  9.33s/it]Fold 2/10:  83%|████████▎ | 10/12 [01:25<00:20, 10.37s/it]Fold 2/10:  92%|█████████▏| 11/12 [01:36<00:10, 10.44s/it]Fold 2/10: 100%|██████████| 12/12 [01:47<00:00, 10.70s/it]Fold 2/10: 100%|██████████| 12/12 [01:47<00:00,  8.96s/it]
+Fold 3/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 3/10:   8%|▊         | 1/12 [00:11<02:10, 11.83s/it]Fold 3/10:  17%|█▋        | 2/12 [00:19<01:33,  9.32s/it]Fold 3/10:  25%|██▌       | 3/12 [00:26<01:13,  8.17s/it]Fold 3/10:  33%|███▎      | 4/12 [00:37<01:15,  9.45s/it]Fold 3/10:  42%|████▏     | 5/12 [00:48<01:10, 10.13s/it]Fold 3/10:  50%|█████     | 6/12 [00:59<01:02, 10.39s/it]Fold 3/10:  58%|█████▊    | 7/12 [01:10<00:52, 10.41s/it]Fold 3/10:  67%|██████▋   | 8/12 [01:20<00:41, 10.49s/it]Fold 3/10:  75%|███████▌  | 9/12 [01:31<00:31, 10.55s/it]Fold 3/10:  83%|████████▎ | 10/12 [01:43<00:21, 10.87s/it]Fold 3/10:  92%|█████████▏| 11/12 [01:54<00:11, 11.11s/it]Fold 3/10: 100%|██████████| 12/12 [02:06<00:00, 11.27s/it]Fold 3/10: 100%|██████████| 12/12 [02:06<00:00, 10.54s/it]
+Fold 4/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 4/10:   8%|▊         | 1/12 [00:11<02:07, 11.61s/it]Fold 4/10:  17%|█▋        | 2/12 [00:22<01:53, 11.33s/it]Fold 4/10:  25%|██▌       | 3/12 [00:34<01:42, 11.37s/it]Fold 4/10:  33%|███▎      | 4/12 [00:42<01:22, 10.36s/it]Fold 4/10:  42%|████▏     | 5/12 [00:46<00:54,  7.73s/it]Fold 4/10:  50%|█████     | 6/12 [00:49<00:36,  6.15s/it]Fold 4/10:  58%|█████▊    | 7/12 [00:52<00:25,  5.14s/it]Fold 4/10:  67%|██████▋   | 8/12 [00:55<00:18,  4.52s/it]Fold 4/10:  75%|███████▌  | 9/12 [00:58<00:12,  4.07s/it]Fold 4/10:  83%|████████▎ | 10/12 [01:01<00:07,  3.77s/it]Fold 4/10:  92%|█████████▏| 11/12 [01:04<00:03,  3.57s/it]Fold 4/10: 100%|██████████| 12/12 [01:07<00:00,  3.43s/it]Fold 4/10: 100%|██████████| 12/12 [01:07<00:00,  5.65s/it]
+Fold 5/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 5/10:   8%|▊         | 1/12 [00:03<00:34,  3.11s/it]Fold 5/10:  17%|█▋        | 2/12 [00:06<00:30,  3.09s/it]Fold 5/10:  25%|██▌       | 3/12 [00:09<00:27,  3.08s/it]Fold 5/10:  33%|███▎      | 4/12 [00:12<00:24,  3.10s/it]Fold 5/10:  42%|████▏     | 5/12 [00:15<00:21,  3.10s/it]Fold 5/10:  50%|█████     | 6/12 [00:18<00:18,  3.09s/it]Fold 5/10:  58%|█████▊    | 7/12 [00:21<00:15,  3.09s/it]Fold 5/10:  67%|██████▋   | 8/12 [00:32<00:22,  5.57s/it]Fold 5/10:  75%|███████▌  | 9/12 [00:41<00:20,  6.69s/it]Fold 5/10:  83%|████████▎ | 10/12 [00:52<00:16,  8.09s/it]Fold 5/10:  92%|█████████▏| 11/12 [01:02<00:08,  8.47s/it]Fold 5/10: 100%|██████████| 12/12 [01:12<00:00,  9.11s/it]Fold 5/10: 100%|██████████| 12/12 [01:12<00:00,  6.07s/it]
+Fold 6/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 6/10:   8%|▊         | 1/12 [00:11<02:03, 11.23s/it]Fold 6/10:  17%|█▋        | 2/12 [00:22<01:54, 11.48s/it]Fold 6/10:  25%|██▌       | 3/12 [00:34<01:43, 11.52s/it]Fold 6/10:  33%|███▎      | 4/12 [00:45<01:31, 11.48s/it]Fold 6/10:  42%|████▏     | 5/12 [00:56<01:18, 11.24s/it]Fold 6/10:  50%|█████     | 6/12 [01:07<01:07, 11.25s/it]Fold 6/10:  58%|█████▊    | 7/12 [01:10<00:42,  8.54s/it]Fold 6/10:  67%|██████▋   | 8/12 [01:13<00:27,  6.76s/it]Fold 6/10:  75%|███████▌  | 9/12 [01:16<00:16,  5.57s/it]Fold 6/10:  83%|████████▎ | 10/12 [01:19<00:09,  4.78s/it]Fold 6/10:  92%|█████████▏| 11/12 [01:22<00:04,  4.21s/it]Fold 6/10: 100%|██████████| 12/12 [01:25<00:00,  3.82s/it]Fold 6/10: 100%|██████████| 12/12 [01:25<00:00,  7.14s/it]
+Fold 7/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 7/10:   8%|▊         | 1/12 [00:09<01:44,  9.47s/it]Fold 7/10:  17%|█▋        | 2/12 [00:17<01:26,  8.68s/it]Fold 7/10:  25%|██▌       | 3/12 [00:25<01:15,  8.36s/it]Fold 7/10:  33%|███▎      | 4/12 [00:34<01:09,  8.74s/it]Fold 7/10:  42%|████▏     | 5/12 [00:44<01:02,  8.94s/it]Fold 7/10:  50%|█████     | 6/12 [00:54<00:56,  9.34s/it]Fold 7/10:  58%|█████▊    | 7/12 [01:06<00:50, 10.11s/it]Fold 7/10:  67%|██████▋   | 8/12 [01:17<00:42, 10.65s/it]Fold 7/10:  75%|███████▌  | 9/12 [01:29<00:32, 10.92s/it]Fold 7/10:  83%|████████▎ | 10/12 [01:40<00:22, 11.09s/it]Fold 7/10:  92%|█████████▏| 11/12 [01:43<00:08,  8.65s/it]Fold 7/10: 100%|██████████| 12/12 [01:47<00:00,  7.09s/it]Fold 7/10: 100%|██████████| 12/12 [01:47<00:00,  8.95s/it]
+Fold 8/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 8/10:   8%|▊         | 1/12 [00:11<02:11, 11.97s/it]Fold 8/10:  17%|█▋        | 2/12 [00:23<01:59, 11.94s/it]Fold 8/10:  25%|██▌       | 3/12 [00:35<01:47, 11.94s/it]Fold 8/10:  33%|███▎      | 4/12 [00:48<01:36, 12.07s/it]Fold 8/10:  42%|████▏     | 5/12 [01:00<01:24, 12.02s/it]Fold 8/10:  50%|█████     | 6/12 [01:12<01:12, 12.02s/it]Fold 8/10:  58%|█████▊    | 7/12 [01:24<01:00, 12.05s/it]Fold 8/10:  67%|██████▋   | 8/12 [01:35<00:47, 11.90s/it]Fold 8/10:  75%|███████▌  | 9/12 [01:48<00:36, 12.08s/it]Fold 8/10:  83%|████████▎ | 10/12 [02:00<00:24, 12.11s/it]Fold 8/10:  92%|█████████▏| 11/12 [02:11<00:11, 11.89s/it]Fold 8/10: 100%|██████████| 12/12 [02:20<00:00, 11.04s/it]Fold 8/10: 100%|██████████| 12/12 [02:20<00:00, 11.74s/it]
+Fold 9/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 9/10:   8%|▊         | 1/12 [00:11<02:10, 11.85s/it]Fold 9/10:  17%|█▋        | 2/12 [00:23<01:57, 11.76s/it]Fold 9/10:  25%|██▌       | 3/12 [00:35<01:45, 11.75s/it]Fold 9/10:  33%|███▎      | 4/12 [00:45<01:27, 10.99s/it]Fold 9/10:  42%|████▏     | 5/12 [00:53<01:10, 10.12s/it]Fold 9/10:  50%|█████     | 6/12 [01:02<00:58,  9.77s/it]Fold 9/10:  58%|█████▊    | 7/12 [01:09<00:43,  8.69s/it]Fold 9/10:  67%|██████▋   | 8/12 [01:12<00:27,  6.92s/it]Fold 9/10:  75%|███████▌  | 9/12 [01:15<00:17,  5.72s/it]Fold 9/10:  83%|████████▎ | 10/12 [01:18<00:09,  4.91s/it]Fold 9/10:  92%|█████████▏| 11/12 [01:21<00:04,  4.36s/it]Fold 9/10: 100%|██████████| 12/12 [01:24<00:00,  3.97s/it]Fold 9/10: 100%|██████████| 12/12 [01:24<00:00,  7.06s/it]
+Fold 10/10:   0%|          | 0/12 [00:00<?, ?it/s]Fold 10/10:   8%|▊         | 1/12 [00:03<00:35,  3.20s/it]Fold 10/10:  17%|█▋        | 2/12 [00:06<00:31,  3.20s/it]Fold 10/10:  25%|██▌       | 3/12 [00:09<00:28,  3.20s/it]Fold 10/10:  33%|███▎      | 4/12 [00:12<00:25,  3.20s/it]Fold 10/10:  42%|████▏     | 5/12 [00:15<00:22,  3.18s/it]Fold 10/10:  50%|█████     | 6/12 [00:19<00:19,  3.17s/it]Fold 10/10:  58%|█████▊    | 7/12 [00:22<00:15,  3.16s/it]Fold 10/10:  67%|██████▋   | 8/12 [00:25<00:12,  3.16s/it]Fold 10/10:  75%|███████▌  | 9/12 [00:34<00:15,  5.05s/it]Fold 10/10:  83%|████████▎ | 10/12 [00:45<00:13,  6.80s/it]Fold 10/10:  92%|█████████▏| 11/12 [00:54<00:07,  7.58s/it]Fold 10/10: 100%|██████████| 12/12 [01:02<00:00,  7.65s/it]Fold 10/10: 100%|██████████| 12/12 [01:02<00:00,  5.21s/it]
+Traceback (most recent call last):
+  File "/workspace/paper_disinfo/colab_no_embeddings/evons_disinformation_detection.py", line 226, in <module>
+    base_df = run_baselines(t, d, y)
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/paper_disinfo/colab_no_embeddings/evons_disinformation_detection.py", line 195, in run_baselines
+    model.fit(X[fit], y[fit])
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/base.py", line 1403, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/ensemble/_forest.py", line 468, in fit
+    trees = Parallel(
+            ^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/utils/parallel.py", line 91, in __call__
+    return super().__call__(iterable_with_config_and_warning_filters)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/joblib/parallel.py", line 2098, in __call__
+    return output if self.return_generator else list(output)
+                                                ^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/joblib/parallel.py", line 1704, in _get_outputs
+    yield from self._retrieve()
+  File "/venv/paper_disinfo/lib/python3.12/site-packages/joblib/parallel.py", line 1822, in _retrieve
+    time.sleep(0.01)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 195, in <module>
+    main()
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 184, in main
+    train(args.fnn_windows)
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 121, in train
+    run([sys.executable, "colab_no_embeddings/evons_disinformation_detection.py"])
+  File "/workspace/paper_disinfo/tools/colleague_revision_run.py", line 51, in run
+    subprocess.run(list(map(str, command)), check=True, cwd=ROOT, env=env)
+  File "/venv/paper_disinfo/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/subprocess.py", line 1201, in communicate
+    self.wait()
+  File "/venv/paper_disinfo/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/subprocess.py", line 2053, in _wait
+    (pid, sts) = self._try_wait(0)
+                 ^^^^^^^^^^^^^^^^^
+  File "/venv/paper_disinfo/lib/python3.12/subprocess.py", line 2011, in _try_wait
+    (pid, sts) = os.waitpid(self.pid, wait_flags)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

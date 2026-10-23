@@ -1,0 +1,4 @@
+# Optional baseline GPU backend. Install into the existing paper_disinfo environment.
+# Python 3.12, CUDA 13 toolkit (including NVRTC), NVIDIA driver >=580.
+# Exact installed versions are recorded in revision_results/backend_benchmark/.
+cuml-cu13==26.10.*

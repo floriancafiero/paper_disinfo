@@ -1,0 +1,217 @@
+{
+  "conventions": {
+    "threshold_rule": "engagement > linearly interpolated quantile",
+    "quantiles": [
+      0.5,
+      0.75,
+      0.9,
+      0.95
+    ],
+    "prefix_lengths": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "note": "The legacy sensitivity script uses >= rather than >; harmonize in later experiments."
+  },
+  "EVONS": {
+    "n_rows": 92969,
+    "veracity_counts": {
+      "fake": 42776,
+      "real": 50193,
+      "missing_or_invalid": 0
+    },
+    "fake_rate_among_valid": 0.4601103593671009,
+    "engagement_field": "fb_engagements",
+    "n_with_engagement": 92969,
+    "n_missing_engagement": 0,
+    "thresholds": [
+      {
+        "quantile": 0.5,
+        "threshold": 230.0,
+        "rule": ">",
+        "n_evaluated": 92969,
+        "n_positive": 46483,
+        "positive_rate": 0.4999838655896051,
+        "n_tied_at_threshold": 43
+      },
+      {
+        "quantile": 0.75,
+        "threshold": 2041.0,
+        "rule": ">",
+        "n_evaluated": 92969,
+        "n_positive": 23242,
+        "positive_rate": 0.24999731093160085,
+        "n_tied_at_threshold": 4
+      },
+      {
+        "quantile": 0.9,
+        "threshold": 8344.399999999994,
+        "rule": ">",
+        "n_evaluated": 92969,
+        "n_positive": 9297,
+        "positive_rate": 0.10000107562735966,
+        "n_tied_at_threshold": 0
+      },
+      {
+        "quantile": 0.95,
+        "threshold": 18886.19999999994,
+        "rule": ">",
+        "n_evaluated": 92969,
+        "n_positive": 4649,
+        "positive_rate": 0.05000591595047812,
+        "n_tied_at_threshold": 0
+      }
+    ],
+    "note": "Cutoffs use observed engagements only; verify the training cohort."
+  },
+  "FakeNewsNet": {
+    "subset": "FakeNewsNet PolitiFact (see path_creation.py)",
+    "n_stories_in_processed_jsonl": 578,
+    "veracity_counts": {
+      "fake": 174,
+      "real": 404
+    },
+    "fake_rate": 0.30103806228373703,
+    "engagement_field": "sum(tweet.favorite_count)",
+    "propagation_coverage_within_processed_jsonl": {
+      "n_nonempty_sequences": 578,
+      "n_empty_sequences": 0,
+      "n_tweets": 401689,
+      "min_tweets_per_story": 1,
+      "median_tweets_per_story": 72.0,
+      "max_tweets_per_story": 22750,
+      "n_with_at_least_k_tweets": {
+        "1": 578,
+        "3": 518,
+        "5": 487,
+        "10": 445
+      },
+      "n_with_future_tweets_after_k": {
+        "1": 541,
+        "3": 503,
+        "5": 476,
+        "10": 434
+      },
+      "n_tweets_missing_favorite_count_treated_as_zero": 0
+    },
+    "thresholds": {
+      "pooled_main_task": [
+        {
+          "quantile": 0.5,
+          "threshold": 29.5,
+          "rule": ">",
+          "n_evaluated": 578,
+          "n_positive": 289,
+          "positive_rate": 0.5,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.75,
+          "threshold": 683.75,
+          "rule": ">",
+          "n_evaluated": 578,
+          "n_positive": 145,
+          "positive_rate": 0.2508650519031142,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.9,
+          "threshold": 9012.50000000004,
+          "rule": ">",
+          "n_evaluated": 578,
+          "n_positive": 58,
+          "positive_rate": 0.10034602076124567,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.95,
+          "threshold": 34473.99999999996,
+          "rule": ">",
+          "n_evaluated": 578,
+          "n_positive": 29,
+          "positive_rate": 0.050173010380622836,
+          "n_tied_at_threshold": 0
+        }
+      ],
+      "fake_sensitivity_subset": [
+        {
+          "quantile": 0.5,
+          "threshold": 46.5,
+          "rule": ">",
+          "n_evaluated": 174,
+          "n_positive": 87,
+          "positive_rate": 0.5,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.75,
+          "threshold": 295.25,
+          "rule": ">",
+          "n_evaluated": 174,
+          "n_positive": 44,
+          "positive_rate": 0.25287356321839083,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.9,
+          "threshold": 1553.900000000002,
+          "rule": ">",
+          "n_evaluated": 174,
+          "n_positive": 18,
+          "positive_rate": 0.10344827586206896,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.95,
+          "threshold": 2828.1999999999944,
+          "rule": ">",
+          "n_evaluated": 174,
+          "n_positive": 9,
+          "positive_rate": 0.05172413793103448,
+          "n_tied_at_threshold": 0
+        }
+      ],
+      "real_sensitivity_subset": [
+        {
+          "quantile": 0.5,
+          "threshold": 19.5,
+          "rule": ">",
+          "n_evaluated": 404,
+          "n_positive": 202,
+          "positive_rate": 0.5,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.75,
+          "threshold": 1514.75,
+          "rule": ">",
+          "n_evaluated": 404,
+          "n_positive": 101,
+          "positive_rate": 0.25,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.9,
+          "threshold": 14371.0,
+          "rule": ">",
+          "n_evaluated": 404,
+          "n_positive": 41,
+          "positive_rate": 0.10148514851485149,
+          "n_tied_at_threshold": 0
+        },
+        {
+          "quantile": 0.95,
+          "threshold": 59315.14999999998,
+          "rule": ">",
+          "n_evaluated": 404,
+          "n_positive": 21,
+          "positive_rate": 0.05198019801980198,
+          "n_tied_at_threshold": 0
+        }
+      ]
+    },
+    "note": "Processed JSONL coverage is NOT the original corpus coverage or API rehydration rate."
+  }
+}

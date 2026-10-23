@@ -29,8 +29,10 @@ import sys
 sys.path.insert(0, str(Path.cwd() / 'tools'))
 from imbalanced_evaluation import evaluate_with_calibration
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from baseline_backend import build_baselines, fit_evaluate, resolve_backend, require_gpu
+
+if resolve_backend() == "gpu":
+    require_gpu()
 
 warnings.filterwarnings('ignore')
 os.environ.setdefault('WANDB_DISABLED', 'true')
@@ -174,14 +176,11 @@ def train_eval_mlp(title_emb, desc_emb, y, epochs=12, batch_size=64, lr=1e-3, n_
     return pd.DataFrame(fold_metrics)
 
 
-def run_baselines(title_emb, desc_emb, y, n_splits=10):
+def run_baselines(title_emb, desc_emb, y, n_splits=10, label="EVONS"):
     X = torch.cat([title_emb, desc_emb], dim=1).numpy()
     skf = StratifiedShuffleSplit(n_splits=n_splits, test_size=0.2, random_state=42)
 
-    models = {
-        'logreg': LogisticRegression(max_iter=1000, n_jobs=-1),
-        'rf': RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1),
-    }
+    models = build_baselines()
     if HAS_XGB:
         models['xgboost'] = xgb.XGBClassifier(
             n_estimators=250, max_depth=6, learning_rate=0.05,
@@ -192,14 +191,9 @@ def run_baselines(title_emb, desc_emb, y, n_splits=10):
     for name, model in models.items():
         for fold, (tr, va) in enumerate(skf.split(X, y), 1):
             fit, cal = train_test_split(tr, test_size=0.25, stratify=y[tr], random_state=1000 + fold)
-            model.fit(X[fit], y[fit])
-            def predict_prob(features):
-                if hasattr(model, 'predict_proba'):
-                    return model.predict_proba(features)[:, 1]
-                raw = model.decision_function(features)
-                return 1 / (1 + np.exp(-raw))
-            m = evaluate_with_calibration(y[va], predict_prob(X[va]),
-                                          y[cal], predict_prob(X[cal]))
+            m, _ = fit_evaluate(model, X, y, fit, cal, va,
+                                backend='cpu' if name == 'xgboost' else resolve_backend(),
+                                label=f'{label} {name} fold={fold}')
             m['n_fit'] = len(fit)
             m['n_calibration'] = len(cal)
             m['model'] = name
@@ -223,7 +217,7 @@ for mode in ['bert', 'mistral']:
     mlp_df['model'] = f'mlp_{mode}'
     results.append(mlp_df)
 
-    base_df = run_baselines(t, d, y)
+    base_df = run_baselines(t, d, y, label=f"EVONS {mode}")
     base_df['model'] = base_df['model'] + f'_{mode}'
     results.append(base_df)
 

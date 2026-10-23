@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from fakenewsnet_prefix import DEFAULT_WINDOWS, validate_windows
+from baseline_backend import resolve_backend, require_gpu
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,10 +26,14 @@ def validate_quantiles(values):
     return quantiles
 
 
-def run(dataset="both", quantiles=Q_VALUES, fnn_windows=DEFAULT_WINDOWS):
+def run(dataset="both", quantiles=Q_VALUES, fnn_windows=DEFAULT_WINDOWS,
+        baseline_backend=None, kernel_name="python3"):
     validate_windows(fnn_windows)
+    backend = resolve_backend(baseline_backend)
+    if backend == 'gpu' and dataset in ('both', 'fakenewsnet'):
+        require_gpu()
     for q in quantiles:
-        env = dict(os.environ, VIRALITY_QUANTILE=str(q))
+        env = dict(os.environ, VIRALITY_QUANTILE=str(q), BASELINE_BACKEND=backend)
         label = str(round(q * 100))
         if dataset in ("evons", "both"):
             print(f"Running EVONS q={q}", flush=True)
@@ -44,12 +49,13 @@ def run(dataset="both", quantiles=Q_VALUES, fnn_windows=DEFAULT_WINDOWS):
             from nbclient import NotebookClient
             source = ROOT / "colab_no_embeddings/fakenewsnet_virality_prediction.ipynb"
             nb = nbformat.read(source, as_version=4)
-            settings = {"VIRALITY_QUANTILE": str(q), "FNN_WINDOWS": fnn_windows}
+            settings = {"VIRALITY_QUANTILE": str(q), "FNN_WINDOWS": fnn_windows,
+                        "BASELINE_BACKEND": backend}
             previous = {key: os.environ.get(key) for key in settings}
             os.environ.update(settings)
             try:
                 NotebookClient(
-                    nb, timeout=7200, kernel_name="python3",
+                    nb, timeout=7200, kernel_name=kernel_name,
                     resources={"metadata": {"path": str(ROOT)}}
                 ).execute()
             finally:
@@ -72,8 +78,12 @@ def main():
     parser.add_argument("--quantiles", default="0.5,0.75,0.9,0.95")
     parser.add_argument("--fnn-windows", default=DEFAULT_WINDOWS,
                         help="FakeNewsNet text windows selected from 1,3,5,10,full; cohort always >=11 tweets")
+    parser.add_argument("--baseline-backend", choices=("cpu", "gpu"),
+                        default=os.environ.get("BASELINE_BACKEND", "cpu"))
+    parser.add_argument("--kernel-name", default="python3")
     args = parser.parse_args()
-    run(args.dataset, validate_quantiles(args.quantiles), args.fnn_windows)
+    run(args.dataset, validate_quantiles(args.quantiles), args.fnn_windows,
+        args.baseline_backend, args.kernel_name)
 
 
 if __name__ == "__main__":

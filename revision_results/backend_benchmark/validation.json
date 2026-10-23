@@ -1,0 +1,12 @@
+{
+  "environment": "conda paper_disinfo (/venv/paper_disinfo)",
+  "command": "RUN_GPU_TESTS=1 python -m unittest discover -s tests -v",
+  "tests_run": 47,
+  "failures": 0,
+  "skipped": 0,
+  "kernel": "paper_disinfo",
+  "kernel_interpreter_verified": "/venv/paper_disinfo/bin/python",
+  "dependency_check": "python -m pip check: No broken requirements found.",
+  "benchmark_policy": "Final benchmark runs after all tests and notebook kernel checks have completed.",
+  "full_production_training_started": false
+}

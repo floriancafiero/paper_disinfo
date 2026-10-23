@@ -1,0 +1,17 @@
+bert logreg: backend=cpu, fit starting
+bert logreg: fit_seconds=1.899, predict_seconds=0.070, calibration_evaluation_seconds=5.461, total_seconds=7.430
+bert logreg: backend=gpu, fit starting
+bert logreg: fit_seconds=0.221, predict_seconds=0.037, calibration_evaluation_seconds=5.074, total_seconds=5.332
+bert rf: backend=cpu, fit starting
+bert rf: fit_seconds=5.090, predict_seconds=0.642, calibration_evaluation_seconds=0.676, total_seconds=6.409
+bert rf: backend=gpu, fit starting
+bert rf: fit_seconds=10.544, predict_seconds=0.016, calibration_evaluation_seconds=0.713, total_seconds=11.274
+mistral logreg: backend=cpu, fit starting
+mistral logreg: fit_seconds=0.297, predict_seconds=0.018, calibration_evaluation_seconds=6.101, total_seconds=6.416
+mistral logreg: backend=gpu, fit starting
+mistral logreg: fit_seconds=0.083, predict_seconds=0.022, calibration_evaluation_seconds=5.062, total_seconds=5.167
+mistral rf: backend=cpu, fit starting
+mistral rf: fit_seconds=5.084, predict_seconds=0.640, calibration_evaluation_seconds=0.593, total_seconds=6.317
+mistral rf: backend=gpu, fit starting
+mistral rf: fit_seconds=12.377, predict_seconds=0.020, calibration_evaluation_seconds=0.599, total_seconds=12.996
+Report: /workspace/paper_disinfo/revision_results/backend_benchmark/report.md

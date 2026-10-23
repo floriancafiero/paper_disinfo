@@ -1,0 +1,31 @@
+{
+  "target": "sum of favorite counts strictly AFTER first k tweets",
+  "score": "sum of favorite counts over first k tweets",
+  "target_threshold_rule": "future engagement > within-cohort quantile",
+  "cohort": "eligible",
+  "quantiles": [
+    0.5,
+    0.75,
+    0.9,
+    0.95
+  ],
+  "k_prefix": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "coverage": {
+    "n_input_sequences": 404,
+    "n_with_future_posts_after_k": {
+      "1": 377,
+      "3": 343,
+      "5": 321,
+      "10": 291
+    },
+    "n_fixed_cohort": 291
+  },
+  "auc_definition": "rank-based ROC-AUC of raw prefix engagements; no fitted model",
+  "average_precision_definition": "non-interpolated AP, with score ties grouped",
+  "warning": "Total and future AUCs now use exactly the same story cohort at each k; the binary targets differ, and later tweet counts vary."
+}

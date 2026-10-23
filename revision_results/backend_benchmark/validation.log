@@ -1,0 +1,223 @@
+test_cpu_original_parameters_without_gpu_imports (test_baseline_backend.BackendTests.test_cpu_original_parameters_without_gpu_imports) ... ok
+test_handoff_passes_backend_kernel_and_restores_environment (test_baseline_backend.BackendTests.test_handoff_passes_backend_kernel_and_restores_environment) ... All training completed
+ok
+test_kernel_receives_backend_and_restores_on_failure (test_baseline_backend.BackendTests.test_kernel_receives_backend_and_restores_on_failure) ... Running FakeNewsNet q=0.5
+Starting test; this can take hours
+ok
+test_positive_class_column_and_validation (test_baseline_backend.BackendTests.test_positive_class_column_and_validation) ... ok
+test_reproducible_sample_shared_between_encoders (test_baseline_backend.BackendTests.test_reproducible_sample_shared_between_encoders) ... ok
+test_selection_and_environment_restore (test_baseline_backend.BackendTests.test_selection_and_environment_restore) ... ok
+test_cpu_gpu_evons_baseline_schema (test_baseline_backend.GPUIntegrationTests.test_cpu_gpu_evons_baseline_schema) ... EVONS logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=-1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+EVONS logreg fold=1: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.060, total_seconds=0.067
+EVONS rf fold=1: backend=cpu, fit starting
+EVONS rf fold=1: fit_seconds=1.193, predict_seconds=0.312, calibration_evaluation_seconds=0.079, total_seconds=1.584
+EVONS logreg fold=1: backend=gpu, fit starting
+EVONS logreg fold=1: fit_seconds=0.354, predict_seconds=0.012, calibration_evaluation_seconds=0.053, total_seconds=0.419
+EVONS rf fold=1: backend=gpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/cuml/ensemble/randomforestclassifier.py:263: UserWarning: The number of bins, `n_bins` is greater than the number of samples used for training. Changing `n_bins` to number of training samples.
+  return self._fit_forest(X, y, sample_weight=sample_weight)
+EVONS rf fold=1: fit_seconds=0.652, predict_seconds=0.002, calibration_evaluation_seconds=0.051, total_seconds=0.705
+ok
+test_cpu_gpu_notebook_baseline_schema (test_baseline_backend.GPUIntegrationTests.test_cpu_gpu_notebook_baseline_schema) ... FakeNewsNet logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=-1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet logreg fold=1: fit_seconds=0.005, predict_seconds=0.001, calibration_evaluation_seconds=0.053, total_seconds=0.059
+FakeNewsNet rf fold=1: backend=cpu, fit starting
+FakeNewsNet rf fold=1: fit_seconds=1.211, predict_seconds=0.312, calibration_evaluation_seconds=0.073, total_seconds=1.596
+FakeNewsNet logreg fold=1: backend=gpu, fit starting
+FakeNewsNet logreg fold=1: fit_seconds=0.006, predict_seconds=0.003, calibration_evaluation_seconds=0.050, total_seconds=0.059
+FakeNewsNet rf fold=1: backend=gpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/cuml/ensemble/randomforestclassifier.py:263: UserWarning: The number of bins, `n_bins` is greater than the number of samples used for training. Changing `n_bins` to number of training samples.
+  return self._fit_forest(X, y, sample_weight=sample_weight)
+FakeNewsNet rf fold=1: fit_seconds=0.590, predict_seconds=0.002, calibration_evaluation_seconds=0.049, total_seconds=0.641
+FakeNewsNet logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=-1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet logreg fold=1: fit_seconds=0.004, predict_seconds=0.001, calibration_evaluation_seconds=0.052, total_seconds=0.057
+FakeNewsNet rf fold=1: backend=cpu, fit starting
+FakeNewsNet rf fold=1: fit_seconds=1.154, predict_seconds=0.305, calibration_evaluation_seconds=0.066, total_seconds=1.525
+FakeNewsNet logreg fold=1: backend=gpu, fit starting
+FakeNewsNet logreg fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.048, total_seconds=0.056
+FakeNewsNet rf fold=1: backend=gpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/cuml/ensemble/randomforestclassifier.py:263: UserWarning: The number of bins, `n_bins` is greater than the number of samples used for training. Changing `n_bins` to number of training samples.
+  return self._fit_forest(X, y, sample_weight=sample_weight)
+FakeNewsNet rf fold=1: fit_seconds=0.591, predict_seconds=0.002, calibration_evaluation_seconds=0.049, total_seconds=0.643
+ok
+test_archive_only_approved_aggregates (test_colleague_handoff.ColleagueHandoffTests.test_archive_only_approved_aggregates) ... Ready to share: /tmp/tmp8ul_7ph4/revision_results/SHARE_AGGREGATES_ONLY.zip (5 aggregate files)
+ok
+test_check_without_any_files (test_colleague_handoff.ColleagueHandoffTests.test_check_without_any_files) ... MISSING does_not_exist.csv
+ok
+test_holm_and_pairing (test_corrected_resampled.CorrectedTests.test_holm_and_pairing) ... ok
+test_nadeau_bengio_factor (test_corrected_resampled.CorrectedTests.test_nadeau_bengio_factor) ... ok
+test_no_pairs_or_invalid_data (test_corrected_resampled.CorrectedTests.test_no_pairs_or_invalid_data) ... ok
+test_strict_virality_cutoff_with_ties (test_corrected_resampled.CorrectedTests.test_strict_virality_cutoff_with_ties) ... ok
+test_evons (test_dataset_audit.DatasetAuditTests.test_evons) ... ok
+test_original_directory_counts (test_dataset_audit.DatasetAuditTests.test_original_directory_counts) ... ok
+test_propagation_coverage (test_dataset_audit.DatasetAuditTests.test_propagation_coverage) ... ok
+test_quantile_ties (test_dataset_audit.DatasetAuditTests.test_quantile_ties) ... ok
+test_cohort_total_target_and_encoders_match (test_fakenewsnet_prefix.PrefixTests.test_cohort_total_target_and_encoders_match) ... ok
+test_lightweight_training_and_csv_roundtrip (test_fakenewsnet_prefix.PrefixTests.test_lightweight_training_and_csv_roundtrip) ... ok
+test_notebooks_preserve_window_grouping_and_remove_stale_outputs (test_fakenewsnet_prefix.PrefixTests.test_notebooks_preserve_window_grouping_and_remove_stale_outputs) ... ok
+test_prefix_ignores_all_later_text (test_fakenewsnet_prefix.PrefixTests.test_prefix_ignores_all_later_text) ... ok
+test_validation_rejects_corrupt_inputs (test_fakenewsnet_prefix.PrefixTests.test_validation_rejects_corrupt_inputs) ... ok
+test_window_validation_and_small_cohorts (test_fakenewsnet_prefix.PrefixTests.test_window_validation_and_small_cohorts) ... ok
+test_both_notebook_load_train_and_export (test_fakenewsnet_prefix_notebooks.NotebookIntegrationTests.test_both_notebook_load_train_and_export) ... bert {'n_input_fake': 40, 'n_cohort_fake': 39, 'n_excluded_fake': 1, 'n_input_real': 40, 'n_cohort_real': 39, 'n_excluded_real': 1, 'n_cohort': 78, 'min_cohort_tweets': 11, 'cohort_fingerprint': '9a6049e904a7ddb42cad093dd2fba8669eda4a1adfa13e5eb320d42eccc8d0e4', 'target_type': 'total_engagement', 'virality_quantile': 0.5, 'virality_threshold': 231.0, 'n_positive_cohort': 38, 'positive_rate_cohort': 0.48717948717948717}
+Running bert, window=1, shape=(78, 2)
+FakeNewsNet bert window=1 logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=1 logreg fold=1: fit_seconds=0.007, predict_seconds=0.001, calibration_evaluation_seconds=0.063, total_seconds=0.071
+FakeNewsNet bert window=1 logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=1 logreg fold=2: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.058, total_seconds=0.065
+FakeNewsNet bert window=1 rf fold=1: backend=cpu, fit starting
+FakeNewsNet bert window=1 rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.035, total_seconds=0.042
+FakeNewsNet bert window=1 rf fold=2: backend=cpu, fit starting
+FakeNewsNet bert window=1 rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.031, total_seconds=0.038
+Running bert, window=full, shape=(78, 2)
+FakeNewsNet bert window=full logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=full logreg fold=1: fit_seconds=0.008, predict_seconds=0.001, calibration_evaluation_seconds=0.067, total_seconds=0.076
+FakeNewsNet bert window=full logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=full logreg fold=2: fit_seconds=0.008, predict_seconds=0.001, calibration_evaluation_seconds=0.059, total_seconds=0.067
+FakeNewsNet bert window=full rf fold=1: backend=cpu, fit starting
+FakeNewsNet bert window=full rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.032, total_seconds=0.038
+FakeNewsNet bert window=full rf fold=2: backend=cpu, fit starting
+FakeNewsNet bert window=full rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.032, total_seconds=0.039
+mistral {'n_input_fake': 40, 'n_cohort_fake': 39, 'n_excluded_fake': 1, 'n_input_real': 40, 'n_cohort_real': 39, 'n_excluded_real': 1, 'n_cohort': 78, 'min_cohort_tweets': 11, 'cohort_fingerprint': '9a6049e904a7ddb42cad093dd2fba8669eda4a1adfa13e5eb320d42eccc8d0e4', 'target_type': 'total_engagement', 'virality_quantile': 0.5, 'virality_threshold': 231.0, 'n_positive_cohort': 38, 'positive_rate_cohort': 0.48717948717948717}
+Running mistral, window=1, shape=(78, 3)
+FakeNewsNet mistral window=1 logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=1 logreg fold=1: fit_seconds=0.007, predict_seconds=0.001, calibration_evaluation_seconds=0.062, total_seconds=0.070
+FakeNewsNet mistral window=1 logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=1 logreg fold=2: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.056, total_seconds=0.063
+FakeNewsNet mistral window=1 rf fold=1: backend=cpu, fit starting
+FakeNewsNet mistral window=1 rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.034, total_seconds=0.041
+FakeNewsNet mistral window=1 rf fold=2: backend=cpu, fit starting
+FakeNewsNet mistral window=1 rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.032, total_seconds=0.038
+Running mistral, window=full, shape=(78, 3)
+FakeNewsNet mistral window=full logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=full logreg fold=1: fit_seconds=0.008, predict_seconds=0.001, calibration_evaluation_seconds=0.066, total_seconds=0.075
+FakeNewsNet mistral window=full logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=full logreg fold=2: fit_seconds=0.008, predict_seconds=0.001, calibration_evaluation_seconds=0.059, total_seconds=0.067
+FakeNewsNet mistral window=full rf fold=1: backend=cpu, fit starting
+FakeNewsNet mistral window=full rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.034, total_seconds=0.041
+FakeNewsNet mistral window=full rf fold=2: backend=cpu, fit starting
+FakeNewsNet mistral window=full rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.031, total_seconds=0.038
+Saved results to /tmp/tmplhraavoq/colab_no_embeddings/outputs/fakenewsnet_virality_prefix_q50
+Saved publication summary to /tmp/tmplhraavoq/colab_no_embeddings/outputs/fakenewsnet_virality_prefix_q50/fakenewsnet_virality_publication_summary.md
+bert {'n_input_fake': 40, 'n_cohort_fake': 39, 'n_excluded_fake': 1, 'n_input_real': 40, 'n_cohort_real': 39, 'n_excluded_real': 1, 'n_cohort': 78, 'min_cohort_tweets': 11, 'cohort_fingerprint': '9a6049e904a7ddb42cad093dd2fba8669eda4a1adfa13e5eb320d42eccc8d0e4', 'target_type': 'veracity', 'n_positive_cohort': 39, 'positive_rate_cohort': 0.5}
+Running bert, window=1, shape=(78, 2)
+FakeNewsNet bert window=1 logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=1 logreg fold=1: fit_seconds=0.005, predict_seconds=0.001, calibration_evaluation_seconds=0.059, total_seconds=0.064
+FakeNewsNet bert window=1 logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=1 logreg fold=2: fit_seconds=0.004, predict_seconds=0.001, calibration_evaluation_seconds=0.061, total_seconds=0.066
+FakeNewsNet bert window=1 rf fold=1: backend=cpu, fit starting
+FakeNewsNet bert window=1 rf fold=1: fit_seconds=0.005, predict_seconds=0.001, calibration_evaluation_seconds=0.043, total_seconds=0.049
+FakeNewsNet bert window=1 rf fold=2: backend=cpu, fit starting
+FakeNewsNet bert window=1 rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.032, total_seconds=0.038
+Running bert, window=full, shape=(78, 2)
+FakeNewsNet bert window=full logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=full logreg fold=1: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.068, total_seconds=0.075
+FakeNewsNet bert window=full logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet bert window=full logreg fold=2: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.067, total_seconds=0.075
+FakeNewsNet bert window=full rf fold=1: backend=cpu, fit starting
+FakeNewsNet bert window=full rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.034, total_seconds=0.041
+FakeNewsNet bert window=full rf fold=2: backend=cpu, fit starting
+FakeNewsNet bert window=full rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.032, total_seconds=0.038
+mistral {'n_input_fake': 40, 'n_cohort_fake': 39, 'n_excluded_fake': 1, 'n_input_real': 40, 'n_cohort_real': 39, 'n_excluded_real': 1, 'n_cohort': 78, 'min_cohort_tweets': 11, 'cohort_fingerprint': '9a6049e904a7ddb42cad093dd2fba8669eda4a1adfa13e5eb320d42eccc8d0e4', 'target_type': 'veracity', 'n_positive_cohort': 39, 'positive_rate_cohort': 0.5}
+Running mistral, window=1, shape=(78, 3)
+FakeNewsNet mistral window=1 logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=1 logreg fold=1: fit_seconds=0.004, predict_seconds=0.001, calibration_evaluation_seconds=0.060, total_seconds=0.065
+FakeNewsNet mistral window=1 logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=1 logreg fold=2: fit_seconds=0.004, predict_seconds=0.001, calibration_evaluation_seconds=0.057, total_seconds=0.061
+FakeNewsNet mistral window=1 rf fold=1: backend=cpu, fit starting
+FakeNewsNet mistral window=1 rf fold=1: fit_seconds=0.005, predict_seconds=0.001, calibration_evaluation_seconds=0.043, total_seconds=0.049
+FakeNewsNet mistral window=1 rf fold=2: backend=cpu, fit starting
+FakeNewsNet mistral window=1 rf fold=2: fit_seconds=0.004, predict_seconds=0.001, calibration_evaluation_seconds=0.031, total_seconds=0.037
+Running mistral, window=full, shape=(78, 3)
+FakeNewsNet mistral window=full logreg fold=1: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=full logreg fold=1: fit_seconds=0.006, predict_seconds=0.001, calibration_evaluation_seconds=0.067, total_seconds=0.074
+FakeNewsNet mistral window=full logreg fold=2: backend=cpu, fit starting
+/venv/paper_disinfo/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:1435: FutureWarning: 'n_jobs' has no effect since 1.8 and will be removed in 1.10. You provided 'n_jobs=1', please leave it unspecified.
+  warnings.warn(msg, category=FutureWarning)
+FakeNewsNet mistral window=full logreg fold=2: fit_seconds=0.013, predict_seconds=0.001, calibration_evaluation_seconds=0.067, total_seconds=0.081
+FakeNewsNet mistral window=full rf fold=1: backend=cpu, fit starting
+FakeNewsNet mistral window=full rf fold=1: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.034, total_seconds=0.041
+FakeNewsNet mistral window=full rf fold=2: backend=cpu, fit starting
+FakeNewsNet mistral window=full rf fold=2: fit_seconds=0.005, predict_seconds=0.002, calibration_evaluation_seconds=0.030, total_seconds=0.036
+Saved results to /tmp/tmpd6hrr9mv/colab_no_embeddings/outputs/fakenewsnet_disinformation_prefix
+Saved publication summary to /tmp/tmpd6hrr9mv/colab_no_embeddings/outputs/fakenewsnet_disinformation_prefix/fakenewsnet_disinformation_publication_summary.md
+ok
+test_grid_passes_windows_and_restores_environment (test_fakenewsnet_prefix_runners.RunnerTests.test_grid_passes_windows_and_restores_environment) ... Running FakeNewsNet q=0.5
+ok
+test_grid_restores_environment_on_kernel_error (test_fakenewsnet_prefix_runners.RunnerTests.test_grid_restores_environment_on_kernel_error) ... Running FakeNewsNet q=0.5
+ok
+test_handoff_notebook_restores_environment (test_fakenewsnet_prefix_runners.RunnerTests.test_handoff_notebook_restores_environment) ... Starting test; this can take hours
+Finished test
+ok
+test_handoff_propagates_windows (test_fakenewsnet_prefix_runners.RunnerTests.test_handoff_propagates_windows) ... All training completed
+ok
+test_cli_outputs (test_future_virality.FutureViralityTests.test_cli_outputs) ... Saved 1 prospective rows to /tmp/tmpnfwp6dkf/future.csv
+ok
+test_cohort_change_and_missing_future (test_future_virality.FutureViralityTests.test_cohort_change_and_missing_future) ... ok
+test_future_excludes_prefix_and_fixed_cohort (test_future_virality.FutureViralityTests.test_future_excludes_prefix_and_fixed_cohort) ... ok
+test_rank_metrics_and_ties (test_future_virality.FutureViralityTests.test_rank_metrics_and_ties) ... ok
+test_pr_auc_prevalence_baseline (test_imbalanced_evaluation.ImbalancedEvaluationTests.test_pr_auc_prevalence_baseline) ... ok
+test_ties_and_degenerate_calibration (test_imbalanced_evaluation.ImbalancedEvaluationTests.test_ties_and_degenerate_calibration) ... ok
+test_tune_uses_only_calibration_scores (test_imbalanced_evaluation.ImbalancedEvaluationTests.test_tune_uses_only_calibration_scores) ... ok
+test_all_code_cells_compile (test_notebook_syntax.NotebookSyntaxTests.test_all_code_cells_compile) ... ok
+test_python_scripts_compile (test_notebook_syntax.NotebookSyntaxTests.test_python_scripts_compile) ... ok
+test_bad_engagement_rejected (test_source_engagement_features.SourceEngagementTests.test_bad_engagement_rejected) ... ok
+test_leave_one_out_does_not_depend_on_own_outcome (test_source_engagement_features.SourceEngagementTests.test_leave_one_out_does_not_depend_on_own_outcome) ... ok
+test_singleton_and_unseen_source (test_source_engagement_features.SourceEngagementTests.test_singleton_and_unseen_source) ... ok
+test_evons_source_confounding_audit (test_tools_smoke.ToolScriptsSmokeTests.test_evons_source_confounding_audit) ... Saved metrics: /tmp/tmpz1ufoq3y/metrics.csv
+Saved report: /tmp/tmpz1ufoq3y/report.json
+Saved fold assignments: /tmp/tmpz1ufoq3y/folds.csv
+ok
+test_fakenewsnet_virality_sensitivity (test_tools_smoke.ToolScriptsSmokeTests.test_fakenewsnet_virality_sensitivity) ... Saved thresholds: /tmp/tmph2_9nlay/thresholds.csv
+Saved early-signal metrics: /tmp/tmph2_9nlay/early.csv
+Saved summary: /tmp/tmph2_9nlay/summary.json
+ok
+test_statistical_evaluation_long_format (test_tools_smoke.ToolScriptsSmokeTests.test_statistical_evaluation_long_format) ... Warning: 1/1 comparisons cannot reach Holm-corrected p<0.05 with the available number of folds (see min_possible_p and holm_threshold_005).
+Recommendation: use at least 5 folds (or repeated CV) for Holm@0.05 to be mathematically attainable in this analysis scope.
+Saved 1 pairwise comparisons to /tmp/tmp9rhwxhvk/stats.csv
+ok
+test_statistical_evaluation_repeated_stratified (test_tools_smoke.ToolScriptsSmokeTests.test_statistical_evaluation_repeated_stratified) ... Warning: 1/1 comparisons cannot reach Holm-corrected p<0.05 with the available number of folds (see min_possible_p and holm_threshold_005).
+Recommendation: use at least 5 folds (or repeated CV) for Holm@0.05 to be mathematically attainable in this analysis scope.
+Saved 1 pairwise comparisons to /tmp/tmph0899uh1/stats_repeated.csv
+ok
+test_default_grid (test_virality_quantile_grid.QuantileGridTests.test_default_grid) ... ok
+test_reject_bad_grid (test_virality_quantile_grid.QuantileGridTests.test_reject_bad_grid) ... ok
+
+----------------------------------------------------------------------
+Ran 47 tests in 20.639s
+
+OK
